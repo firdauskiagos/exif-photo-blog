@@ -1,4 +1,5 @@
 export const KEY_COMMANDS = {
+  home: 'H',
   full: 'F',
   grid: 'G',
   about: 'A',
@@ -7,7 +8,6 @@ export const KEY_COMMANDS = {
   edit: 'E',
   favorite: 'P',
   unfavorite: 'X',
-  togglePrivate: 'M',
   download: 'D',
   sync: 'S',
   search: ['⌘', 'K'],

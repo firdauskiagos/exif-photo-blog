@@ -4,9 +4,14 @@ https://github.com/sambecker/exif-photo-blog/assets/169298/4253ea54-558a-4358-88
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/sambecker-pro/clone?demo-description=Store%20photos%20with%20original%20camera%20data&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F39rys245Px3FVBGRJNYEON%2Fbf68d5c052bda9e9e5bec21878764bc3%2Fimage.png&demo-title=Photo%20Blog&demo-url=https%3A%2F%2Fphotos.sambecker.com&from=templates&project-name=Photo%20Blog&repository-name=exif-photo-blog&repository-url=https%3A%2F%2Fgithub.com%2Fsambecker%2Fexif-photo-blog&skippable-integrations=1&stores=%5B%7B%22type%22%3A%22postgres%22%7D%2C%7B%22type%22%3A%22blob%22%7D%5D&teamCreateStatus=hidden)
 
-🎬&nbsp;&nbsp;Demo
+🎬&nbsp;&nbsp;Hosted examples
 -
-https://photos.sambecker.com
+- [photos.sambecker.com](https://photos.sambecker.com)
+- [birdnerd.photo](https://birdnerd.photo)
+- [booshie.photo](https://booshie.photo)
+- [photos.sconetto.me](https://photos.sconetto.me)
+
+_Submit your site as an example by [opening an issue](https://github.com/sambecker/exif-photo-blog/issues/new?template=example_site_submission.md)_
 
 ✨&nbsp;&nbsp;Features
 -
@@ -22,6 +27,17 @@ https://photos.sambecker.com
 - Support for Fujifilm recipes and film simulations
 
 <img src="/readme/og-image-share.png" alt="OG Image Preview" width=600 />
+
+📋&nbsp;&nbsp;Contents
+-
+- [Installation](#installation)
+- [Receiving updates](#receiving-updates)
+- [Local development](#local-development)
+- [Customization](#customization)
+- [Alternate storage providers](#alternate-storage-providers)
+- [Alternate database providers (experimental)](#alternate-database-providers-experimental)
+- [I18N](#i18n)
+- [FAQ](#faq)
 
 🛠️&nbsp;&nbsp;Installation
 -
@@ -120,16 +136,22 @@ To auto-generate text descriptions of photos, configure a provider. Vercel AI Ga
 4. Add [rate limiting](#rate-limiting) (_recommended_)
 5. Configure auto-generated fields (optional, see above for instructions)
 
-### Location services
+### Location
 
-To add location meta to entities like albums:
+- To add location meta to entities like photos and albums:
 
-1. Setup Google Places API
-   - [Create Google Cloud project](https://console.cloud.google.com/projectcreate) if necessary
-   - Select [Create credentials](https://console.cloud.google.com/apis/credentials) and choose "API key"
-   - Choose "Restrict key" and select "Places API (new)"
-2. Store API key in `GOOGLE_PLACES_API_KEY`
-3. Add [rate limiting](#rate-limiting) (_recommended_)
+  1. Setup Google Places/Geocoding API
+      - [Create Google Cloud project](https://console.cloud.google.com/projectcreate) if necessary
+      - Enable "Places API (new)" (for finding places of interest)
+      - Enable "Geocoding API" (for reverse lookup based on lat/long coordinates)
+      - Select [Create credentials](https://console.cloud.google.com/apis/credentials) and choose "API key"
+      - Choose "Restrict key" and select "Places API (new)" + "Geocoding API"
+  2. Store API key in `GOOGLE_PLACES_GEOCODING_API_KEY`
+  3. Add [rate limiting](#rate-limiting) (_recommended_)
+
+- `NEXT_PUBLIC_GEO_PRIVACY = 1` disables collection/display of location-based data (⚠️ re-compresses uploaded images in order to remove GPS information)
+
+- `DISABLE_AUTO_GENERATE_LOCATIONS = 1` to disables auto-generation of location data
 
 ### Rate limiting
 
@@ -194,7 +216,6 @@ Create Upstash Redis store from storage tab of Vercel dashboard and link to your
 - `NEXT_PUBLIC_MATTE_PHOTOS = 1` constrains the size of each photo, and displays a surrounding border, potentially useful for photos with tall aspect ratios (colors can be customized via `NEXT_PUBLIC_MATTE_COLOR` + `NEXT_PUBLIC_MATTE_COLOR_DARK`)
 
 ### Settings
-- `NEXT_PUBLIC_GEO_PRIVACY = 1` disables collection/display of location-based data (⚠️ re-compresses uploaded images in order to remove GPS information)
 - `NEXT_PUBLIC_ALLOW_PUBLIC_DOWNLOADS = 1` enables public photo downloads for all visitors (⚠️ may result in increased bandwidth usage)
 - `NEXT_PUBLIC_SOCIAL_NETWORKS`
   - Comma-separated list of share modal options

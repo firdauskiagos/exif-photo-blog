@@ -5,6 +5,7 @@ import {
   ReactNode,
   SetStateAction,
   Dispatch,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -13,6 +14,7 @@ import {
 } from 'react';
 import {
   PATH_ABOUT,
+  PATH_ADMIN_AI_MODELS,
   PATH_ADMIN_BASELINE,
   PATH_ADMIN_COMPONENTS,
   PATH_ADMIN_CONFIGURATION,
@@ -31,6 +33,7 @@ import {
   pathForFocalLength,
   pathForLens,
   pathForPhoto,
+  pathForQuery,
   pathForRecipe,
   pathForTag,
   pathForYear,
@@ -50,7 +53,11 @@ import { IoClose, IoInvertModeSharp } from 'react-icons/io5';
 import { useAppState } from '@/app/AppState';
 import { RiToolsFill } from 'react-icons/ri';
 import { signOutAction } from '@/auth/actions';
-import { getKeywordsForPhoto, titleForPhoto } from '@/photo';
+import {
+  getKeywordsForPhoto,
+  photoQuantityText,
+  titleForPhoto,
+} from '@/photo';
 import PhotoDate from '@/photo/PhotoDate';
 import PhotoSmall from '@/photo/PhotoSmall';
 import {
@@ -93,6 +100,7 @@ import IconFavs from '@/components/icons/IconFavs';
 import { useAppText } from '@/i18n/state/client';
 import LoaderButton from '@/components/primitives/LoaderButton';
 import IconRecents from '@/components/icons/IconRecents';
+import KeyCommand from '@/components/primitives/KeyCommand';
 import { CgClose, CgFileDocument } from 'react-icons/cg';
 import { FaRegUserCircle } from 'react-icons/fa';
 import { formatDistanceToNow } from 'date-fns';
@@ -100,6 +108,7 @@ import IconCheck from '@/components/icons/IconCheck';
 import { getSortStateFromPath } from '@/photo/sort/path';
 import IconSort from '@/components/icons/IconSort';
 import { useSelectPhotosState } from '@/admin/select/SelectPhotosState';
+import { useEditTitlesState } from '@/admin/edit-titles/EditTitlesState';
 import IconAlbum from '@/components/icons/IconAlbum';
 import usePhotoQuery from '@/photo/usePhotoQuery';
 import { clearCacheAction } from '@/photo/actions';
@@ -111,6 +120,8 @@ const DIALOG_DESCRIPTION = 'For searching photos, views, and settings';
 const LISTENER_KEYDOWN = 'keydown';
 
 const MAX_HEIGHT = '20rem';
+
+const MINIMUM_QUERY_LENGTH = 2;
 
 type CommandKItem = {
   label: ReactNode
@@ -166,6 +177,7 @@ export default function CommandKClient({
     isUserSignedIn,
     clearAuthStateAndRedirectIfNecessary,
     isCommandKOpen: isOpen,
+    nextCommandKQuery,
     startUpload,
     invalidateSwr,
     photosCountTotal,
@@ -179,11 +191,13 @@ export default function CommandKClient({
     areZoomControlsShown,
     arePhotosMatted,
     areAdminDebugToolsEnabled,
+    isAdminAiModelDebugEnabled,
     shouldShowBaselineGrid,
     shouldDebugImageFallbacks,
     shouldDebugInsights,
     shouldDebugRecipeOverlays,
     setIsCommandKOpen: setIsOpen,
+    setNextCommandKQuery,
     setShouldShowBaselineGrid,
     setIsGridHighDensity,
     setAreZoomControlsShown,
@@ -198,6 +212,12 @@ export default function CommandKClient({
     startSelectingPhotos,
     stopSelectingPhotos,
   } = useSelectPhotosState();
+
+  const {
+    isEditingTitles,
+    startEditingTitles,
+    stopEditingTitles,
+  } = useEditTitlesState();
 
   const {
     doesPathOfferSort,
@@ -257,13 +277,23 @@ export default function CommandKClient({
   const {
     queryFormatted,
     photos,
+    count: photosCount,
     isLoading,
     reset,
-  } = usePhotoQuery({ query, isEnabled: !isPending });
+  } = usePhotoQuery({
+    query,
+    isEnabled: !isPending,
+    minimumQueryLength: MINIMUM_QUERY_LENGTH,
+  });
 
   const { setTheme } = useTheme();
 
   const router = useRouter();
+
+  const showAllQueryResults = useCallback(() => {
+    shouldCloseAfterWaiting.current = true;
+    startTransition(() => router.push(pathForQuery(queryFormatted)));
+  }, [queryFormatted, router]);
 
   useEffect(() => {
     isOpenRef.current = isOpen;
@@ -289,27 +319,46 @@ export default function CommandKClient({
       return [{
         heading: 'Photos',
         accessory: <IconPhoto size={14} />,
-        items: photos.map(photo => ({
-          label: titleForPhoto(photo),
-          keywords: getKeywordsForPhoto(photo),
-          annotation: <PhotoDate {...{ photo, timezone: undefined }} />,
-          accessory: <PhotoSmall photo={photo} />,
-          path: pathForPhoto({ photo }),
-        })),
+        items: [
+          {
+            label: appText.cmdk.found(
+              photoQuantityText(photosCount, appText, false),
+            ),
+            explicitKey: 'view-all',
+            // Keep this row visible for any matching photo query
+            keywords: [queryFormatted],
+            annotation: <KeyCommand modifier="⌘" className="max-sm:hidden">
+              ⏎
+            </KeyCommand>,
+            path: pathForQuery(queryFormatted),
+          },
+          ...photos.map(photo => ({
+            label: titleForPhoto(photo),
+            // Include query so cmdk's client filter can't hide SQL matches
+            // (e.g. multi-word / cross-field ILIKE hits)
+            keywords: [queryFormatted, ...getKeywordsForPhoto(photo)],
+            annotation: <PhotoDate {...{ photo, timezone: undefined }} />,
+            accessory: <PhotoSmall photo={photo} />,
+            path: pathForPhoto({ photo }),
+          })),
+        ],
       }];
     } else {
       return [];
     }
-  },    
-  [photos],
+  },
+  [photos, photosCount, appText, queryFormatted],
   );
 
   useEffect(() => {
     if (!isOpen) {
       setQuery('');
       reset();
+    } else if (nextCommandKQuery !== undefined) {
+      setQuery(nextCommandKQuery);
+      setNextCommandKQuery?.(undefined);
     }
-  }, [isOpen, reset]);
+  }, [isOpen, reset, nextCommandKQuery, setNextCommandKQuery]);
 
   const recent = recents[0];
   const recentsStatus = useMemo(() => {
@@ -674,6 +723,19 @@ export default function CommandKClient({
         }
       },
     }, {
+      label: isEditingTitles
+        ? appText.admin.editTitlesExit
+        : appText.admin.editTitles,
+      annotation: <IconLock narrow />,
+      keywords: ['title', 'caption', 'bulk'],
+      action: () => {
+        if (!isEditingTitles) {
+          startEditingTitles?.();
+        } else {
+          stopEditingTitles?.();
+        }
+      },
+    }, {
       label: appText.admin.clearCache,
       annotation: <IconLock narrow />,
       action: () => clearCacheAction()
@@ -682,6 +744,7 @@ export default function CommandKClient({
           toastSuccess(appText.admin.clearCacheSuccess);
         }),
     }, {
+      explicitKey: appText.admin.appInsights,
       label: <span className="flex items-center gap-3">
         {appText.admin.appInsights}
         {insightsIndicatorStatus &&
@@ -704,6 +767,13 @@ export default function CommandKClient({
         label: 'Components Overview',
         annotation: <BiLockAlt />,
         path: PATH_ADMIN_COMPONENTS,
+      });
+    }
+    if (isAdminAiModelDebugEnabled) {
+      adminSection.items.push({
+        label: 'AI Model Comparison',
+        annotation: <BiLockAlt />,
+        path: PATH_ADMIN_AI_MODELS,
       });
     }
     adminSection.items.push({
@@ -755,6 +825,18 @@ export default function CommandKClient({
             onValueChange={value => {
               setQuery(value);
               updateMask();
+            }}
+            onKeyDown={e => {
+              // Meta+Enter skips individual results and shows the whole set
+              if (
+                e.key === 'Enter' &&
+                (e.metaKey || e.ctrlKey) &&
+                !isLoading &&
+                photos.length > 0
+              ) {
+                e.preventDefault();
+                showAllQueryResults();
+              }
             }}
             className={clsx(
               'grow p-0',
@@ -827,7 +909,7 @@ export default function CommandKClient({
                   key={heading}
                   heading={<div className={clsx(
                     'flex items-center',
-                    'px-2 py-1',
+                    'px-2 pt-1 pb-2',
                     'text-xs font-medium text-dim tracking-wider',
                     isPending && 'opacity-20',
                   )}>
@@ -850,7 +932,15 @@ export default function CommandKClient({
                     path,
                     action,
                   }) => {
-                    const key = `${heading} ${explicitKey ?? label}`;
+                    // Include path so shared titles/
+                    // ReactNode labels stay unique
+                    const key = [
+                      heading,
+                      explicitKey ?? (typeof label === 'string'
+                        ? label
+                        : undefined),
+                      path,
+                    ].filter(Boolean).join(' ');
                     return <CommandKItem
                       key={key}
                       label={label}

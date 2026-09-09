@@ -28,6 +28,7 @@ export default function FieldsetWithStatus({
   className,
   selectOptions,
   selectOptionsDefaultLabel,
+  selectOpenOnLoad,
   tagOptions,
   tagOptionsLimit,
   tagOptionsLimitValidationMessage,
@@ -65,6 +66,7 @@ export default function FieldsetWithStatus({
   className?: string
   selectOptions?: SelectMenuOptionType[]
   selectOptionsDefaultLabel?: string
+  selectOpenOnLoad?: boolean
   tagOptions?: AnnotatedTag[]
   tagOptionsLimit?: number
   tagOptionsLimitValidationMessage?: string
@@ -98,6 +100,8 @@ export default function FieldsetWithStatus({
 
   const readOnly = readOnlyProp || pending || loading;
 
+  const errorId = error ? `${id}-error` : undefined;
+
   const inputProps: InputHTMLAttributes<HTMLInputElement> = {
     id,
     name: id,
@@ -117,6 +121,10 @@ export default function FieldsetWithStatus({
     disabled: type === 'checkbox' && (
       readOnly || pending || loading
     ),
+    required,
+    'aria-required': required,
+    'aria-invalid': Boolean(error),
+    'aria-describedby': errorId,
     className: clsx(
       (
         type === 'text' ||
@@ -138,7 +146,10 @@ export default function FieldsetWithStatus({
         // For managing checkbox active state
         'group',
         'space-y-1',
-        type === 'checkbox' && 'flex items-center gap-2',
+        type === 'checkbox' && clsx(
+          'flex items-center gap-2',
+          !readOnly && 'cursor-pointer',
+        ),
         className,
       )}>
         {!hideLabel &&
@@ -146,9 +157,12 @@ export default function FieldsetWithStatus({
             htmlFor={id}
             className={clsx(
               'inline-flex flex-wrap gap-x-2 items-center select-none',
-              type === 'checkbox' && 'order-2 m-0 translate-y-[0.25px]',
-              type === 'checkbox' && readOnly &&
-                'opacity-50 cursor-not-allowed',
+              type === 'checkbox' && clsx(
+                'order-2 m-0 translate-y-[0.25px]',
+                readOnly
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'cursor-pointer',
+              ),
             )}
           >
             <span className="inline-flex items-center gap-x-[5px]">
@@ -184,7 +198,7 @@ export default function FieldsetWithStatus({
                 *
               </span>}
             {error &&
-              <span className="text-error">
+              <span id={errorId} className="text-error">
                 {error}
               </span>}
             {required &&
@@ -202,11 +216,12 @@ export default function FieldsetWithStatus({
               id={id}
               name={id}
               tabIndex={tabIndex}
-              className="w-full"
+              className="w-full min-w-0"
               value={value}
               onChange={onChange}
               options={selectOptions}
               defaultOptionLabel={selectOptionsDefaultLabel}
+              openOnLoad={selectOpenOnLoad}
               error={error}
               readOnly={readOnly}
             />
@@ -240,6 +255,10 @@ export default function FieldsetWithStatus({
                   readOnly={readOnly}
                   spellCheck={spellCheck}
                   autoCapitalize={!capitalize ? 'off' : undefined}
+                  required={required}
+                  aria-required={required}
+                  aria-invalid={Boolean(error)}
+                  aria-describedby={errorId}
                   className={clsx(
                     'w-full h-24 resize-none',
                     Boolean(error) && 'error',

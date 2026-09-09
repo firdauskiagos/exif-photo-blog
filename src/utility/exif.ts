@@ -41,13 +41,13 @@ export const getDimensionsFromExif = (
     case OrientationTypes.BOTTOM_LEFT:
     case OrientationTypes.LEFT_TOP:
     case OrientationTypes.RIGHT_BOTTOM:
-      width = exif.imageSize?.width || exifr.ImageWidth;
-      height = exif.imageSize?.height || exifr.ImageHeight;
+      width = exif.imageSize?.width || exifr?.ImageWidth;
+      height = exif.imageSize?.height || exifr?.ImageHeight;
       break;
     case OrientationTypes.RIGHT_TOP:
     case OrientationTypes.LEFT_BOTTOM:
-      width = exif.imageSize?.height || exifr.ImageHeight;
-      height = exif.imageSize?.width || exifr.ImageWidth;
+      width = exif.imageSize?.height || exifr?.ImageHeight;
+      height = exif.imageSize?.width || exifr?.ImageWidth;
       break;
   }
 

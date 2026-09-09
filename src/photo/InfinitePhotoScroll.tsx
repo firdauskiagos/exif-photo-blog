@@ -11,8 +11,12 @@ import { clsx } from 'clsx/lite';
 import { useAppState } from '@/app/AppState';
 import useVisibility from '@/utility/useVisibility';
 import { SortBy } from './sort';
-import { SWR_KEYS } from '@/swr';
 import { useAppText } from '@/i18n/state/client';
+import { isTagPrivate } from '@/tag';
+
+// Future reader:
+// Adding useIsHydrated check caused <PhotoLarge /> images
+// to flicker on home feed
 
 const SIZE_KEY_SEPARATOR = '__';
 const getSizeFromKey = (key: string) =>
@@ -31,6 +35,7 @@ export default function InfinitePhotoScroll({
   sortBy,
   sortWithPriority,
   excludeFromFeeds,
+  query,
   recent,
   year,
   camera,
@@ -67,15 +72,16 @@ export default function InfinitePhotoScroll({
   }) => ReactNode
 } & PhotoSetCategory) {
   const { isUserSignedIn } = useAppState();
-  
+
   const { utility } = useAppText();
 
   const keyGenerator = useCallback(
     (size: number, prev: Photo[]) => prev && prev.length === 0
       ? null
-      // eslint-disable-next-line max-len
-      : `${SWR_KEYS.INFINITE_PHOTO_SCROLL}-${cacheKey}${SIZE_KEY_SEPARATOR}${size}`
+      : `${cacheKey}${SIZE_KEY_SEPARATOR}${size}`
     , [cacheKey]);
+
+  const isPrivateTag = isTagPrivate(tag);
 
   const fetcher = useCallback((
     keyWithSize: string,
@@ -83,17 +89,20 @@ export default function InfinitePhotoScroll({
   ) =>
     (useCachedPhotos ? getPhotosCachedAction : getPhotosAction)({
       offset: initialOffset + getSizeFromKey(keyWithSize) * itemsPerPage,
-      sortBy, 
+      sortBy,
       sortWithPriority,
       excludeFromFeeds,
       limit: itemsPerPage,
-      hidden: includeHiddenPhotos ? 'include' : 'exclude',
+      hidden: isPrivateTag
+        ? 'only'
+        : includeHiddenPhotos ? 'include' : 'exclude',
+      query,
       recent,
       year,
       camera,
       lens,
       album,
-      tag,
+      tag: isPrivateTag ? undefined : tag,
       recipe,
       film,
       focal,
@@ -106,6 +115,8 @@ export default function InfinitePhotoScroll({
     initialOffset,
     itemsPerPage,
     includeHiddenPhotos,
+    isPrivateTag,
+    query,
     recent,
     year,
     camera,
@@ -130,7 +141,7 @@ export default function InfinitePhotoScroll({
     );
 
   const buttonContainerRef = useRef<HTMLDivElement>(null);
-  
+
   const isLoadingOrValidating = isLoading || isValidating;
 
   const isFinished = useMemo(() =>
@@ -147,9 +158,13 @@ export default function InfinitePhotoScroll({
     photoId: string,
     revalidateRemainingPhotos?: boolean,
   ) => mutate(data, {
-    revalidate: (_data: Photo[], [_, size]:[string, number]) => {
+    // SWR passes the page's key, so derive its index from the key itself.
+    // A photo absent from loaded pages lives in server-rendered content,
+    // which shifts every page when it's removed
+    revalidate: (_data: Photo[], key: string) => {
       const i = (data ?? []).findIndex(photos =>
         photos.some(photo => photo.id === photoId));
+      const size = getSizeFromKey(key);
       return revalidateRemainingPhotos ? size >= i : size === i;
     },
   } as any), [data, mutate]);
@@ -161,7 +176,7 @@ export default function InfinitePhotoScroll({
       <button
         type="button"
         onClick={() => error ? mutate() : advance()}
-        disabled={isLoading || isValidating}
+        disabled={isLoadingOrValidating}
         className={clsx(
           'w-full flex justify-center',
           isLoadingOrValidating && 'subtle',

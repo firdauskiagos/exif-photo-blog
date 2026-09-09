@@ -23,7 +23,6 @@ import IconRecipe from '@/components/icons/IconRecipe';
 import IconTag from '@/components/icons/IconTag';
 import IconFolder from '@/components/icons/IconFolder';
 import IconSignOut from '@/components/icons/IconSignOut';
-import { IoMdCheckboxOutline } from 'react-icons/io';
 import IconBroom from '@/components/icons/IconBroom';
 import InsightsIndicatorDot from './insights/InsightsIndicatorDot';
 import MoreMenuItem from '@/components/more/MoreMenuItem';
@@ -33,12 +32,15 @@ import SwitcherItemMenu from '@/components/switcher/SwitcherItemMenu';
 import { MoreMenuSection } from '@/components/more/MoreMenu';
 import { FiXSquare } from 'react-icons/fi';
 import { useSelectPhotosState } from './select/SelectPhotosState';
+import { useEditTitlesState } from './edit-titles/EditTitlesState';
 import IconAlbum from '@/components/icons/IconAlbum';
+import IconEdit from '@/components/icons/IconEdit';
 import { SHOW_ABOUT_PAGE } from '@/app/config';
 import {
   HEIGHT_CLASS,
   SWITCHER_ITEM_WIDTH,
 } from '@/components/switcher/SwitcherItem';
+import { TbSquareRoundedCheck, TbSquareRoundedX } from 'react-icons/tb';
 
 export default function AdminAppMenu({
   isOpen,
@@ -65,6 +67,12 @@ export default function AdminAppMenu({
     startSelectingPhotos,
     stopSelectingPhotos,
   } = useSelectPhotosState();
+
+  const {
+    isEditingTitles,
+    startEditingTitles,
+    stopEditingTitles,
+  } = useEditTitlesState();
 
   const appText = useAppText();
 
@@ -169,17 +177,34 @@ export default function AdminAppMenu({
           ? appText.admin.selectPhotosExit
           : appText.admin.selectPhotos,
         icon: isSelectingPhotos
-          ? <FiXSquare
-            size={15}
-            className="translate-x-[-0.75px] translate-y-[0.5px]"
+          ? <TbSquareRoundedX
+            size={17}
+            className="translate-x-[-0.5px] translate-y-[1px]"
           />
-          : <IoMdCheckboxOutline
-            size={16}
-            className="translate-x-[-0.5px] translate-y-[0.5px]"
+          : <TbSquareRoundedCheck
+            size={17}
+            className="translate-x-[-0.5px] translate-y-[1px]"
           />,
         action: isSelectingPhotos
           ? stopSelectingPhotos
           : startSelectingPhotos,
+      });
+      items.push({
+        label: isEditingTitles
+          ? appText.admin.editTitlesExit
+          : appText.admin.editTitles,
+        icon: isEditingTitles
+          ? <FiXSquare
+            size={15}
+            className="translate-x-[-0.75px] translate-y-[0.5px]"
+          />
+          : <IconEdit
+            size={17}
+            className="translate-x-[-0.5px] translate-y-[0.5px]"
+          />,
+        action: isEditingTitles
+          ? stopEditingTitles
+          : startEditingTitles,
       });
     }
     items.push({
@@ -201,6 +226,9 @@ export default function AdminAppMenu({
     isSelectingPhotos,
     startSelectingPhotos,
     stopSelectingPhotos,
+    isEditingTitles,
+    startEditingTitles,
+    stopEditingTitles,
     photosCountNeedSync,
     photosCountTotal,
     recipesCount,

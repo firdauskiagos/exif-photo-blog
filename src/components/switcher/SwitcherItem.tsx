@@ -11,6 +11,11 @@ export const WIDTH_CLASS         = 'w-[46px]';
 export const WIDTH_CLASS_NARROW  = 'w-[36px]';
 export const HEIGHT_CLASS        = 'h-[32px]';
 
+export const SWITCHER_ITEM_INTERACTIVE_BG = clsx(
+  'hover:bg-gray-100/60 active:bg-gray-100',
+  'dark:hover:bg-gray-900/75 dark:active:bg-gray-900',
+);
+
 export default function SwitcherItem({
   icon,
   title,
@@ -24,6 +29,7 @@ export default function SwitcherItem({
   prefetch = SHOULD_PREFETCH_ALL_LINKS,
   tooltip,
   width = 'normal',
+  iconIsFocusable,
 }: {
   icon: ReactNode
   title?: string
@@ -37,14 +43,21 @@ export default function SwitcherItem({
   prefetch?: boolean
   tooltip?: ComponentProps<typeof Tooltip>
   width?: 'narrow' | 'normal'
+  // Set when `icon` contains its own focusable element, so the tooltip
+  // doesn't wrap it in a button. See `triggerIsFocusable` on TooltipPrimitive
+  iconIsFocusable?: boolean
 }) {
+  const ariaLabel = typeof tooltip?.content === 'string'
+    ? tooltip.content
+    : undefined;
+
   const widthClass = width === 'narrow' ? WIDTH_CLASS_NARROW : WIDTH_CLASS;
   const className = clsx(
+    'link',
     'flex items-center justify-center',
     `${widthClass} ${HEIGHT_CLASS}`,
     isInteractive && 'cursor-pointer',
-    isInteractive && 'hover:bg-gray-100/60 active:bg-gray-100',
-    isInteractive && 'dark:hover:bg-gray-900/75 dark:active:bg-gray-900',
+    isInteractive && SWITCHER_ITEM_INTERACTIVE_BG,
     active
       ? 'text-black dark:text-white'
       : 'text-gray-400 dark:text-gray-600',
@@ -73,10 +86,20 @@ export default function SwitcherItem({
       prefetch,
       icon: renderIcon(),
       loader: <Spinner />,
-    }} />
-    : <div {...{ title, onClick, className }}>
-      {renderIcon()}
-    </div>;
+    }}
+    aria-label={ariaLabel ?? title}
+    />
+    : onClick
+      ? <button
+        type="button"
+        {...{ title, onClick, className }}
+        aria-label={ariaLabel ?? title}
+      >
+        {renderIcon()}
+      </button>
+      : <div {...{ title, className }}>
+        {renderIcon()}
+      </div>;
 
   return (
     tooltip
@@ -84,6 +107,7 @@ export default function SwitcherItem({
         {...tooltip}
         classNameTrigger={widthClass}
         delayDuration={500}
+        triggerIsFocusable={Boolean(href || onClick || iconIsFocusable)}
       >
         {content}
       </Tooltip>

@@ -63,6 +63,7 @@ export const createPhotosTable = () =>
       exposure_time DOUBLE PRECISION,
       exposure_compensation REAL,
       location_name VARCHAR(255),
+      location JSONB,
       latitude DOUBLE PRECISION,
       longitude DOUBLE PRECISION,
       film VARCHAR(255),
@@ -106,6 +107,7 @@ export const insertPhoto = (photo: PhotoDbInsert) =>
       exposure_time,
       exposure_compensation,
       location_name,
+      location,
       latitude,
       longitude,
       film,
@@ -141,6 +143,9 @@ export const insertPhoto = (photo: PhotoDbInsert) =>
       ${photo.exposureTime},
       ${photo.exposureCompensation},
       ${photo.locationName},
+      ${photo.location
+        ? JSON.stringify(photo.location)
+        : null},
       ${photo.latitude},
       ${photo.longitude},
       ${photo.film},
@@ -180,6 +185,9 @@ export const updatePhoto = (photo: PhotoDbInsert) =>
       exposure_time=${photo.exposureTime},
       exposure_compensation=${photo.exposureCompensation},
       location_name=${photo.locationName},
+      location=${photo.location
+        ? JSON.stringify(photo.location)
+        : null},
       latitude=${photo.latitude},
       longitude=${photo.longitude},
       film=${photo.film},
@@ -196,6 +204,33 @@ export const updatePhoto = (photo: PhotoDbInsert) =>
     WHERE id=${photo.id}
   `, 'updatePhoto');
 
+export const updatePhotoTitleCaption = (
+  photoIds: string[],
+  titles: (string | null)[],
+  captions: (string | null)[],
+) => {
+  if (photoIds.length === 0) {
+    return Promise.resolve();
+  }
+
+  const values: (string | null)[] = [];
+  const valueRows = photoIds.map((id, index) => {
+    const base = index * 3;
+    values.push(id, titles[index] ?? null, captions[index] ?? null);
+    return `($${base + 1}::text, $${base + 2}::text, $${base + 3}::text)`;
+  });
+  values.push((new Date()).toISOString());
+
+  return safelyQuery(() => query(`
+    UPDATE photos AS p SET
+      title = v.title,
+      caption = v.caption,
+      updated_at = $${values.length}
+    FROM (VALUES ${valueRows.join(', ')}) AS v(id, title, caption)
+    WHERE p.id = v.id
+  `, values), 'updatePhotoTitleCaption');
+};
+
 export const deletePhotoTagGlobally = (tag: string) =>
   safelyQuery(() => sql`
     UPDATE photos
@@ -209,6 +244,24 @@ export const renamePhotoTagGlobally = (tag: string, updatedTag: string) =>
     SET tags=ARRAY_REPLACE(tags, ${tag}, ${updatedTag})
     WHERE ${tag}=ANY(tags)
   `, 'renamePhotoTagGlobally');
+
+export const setPhotoVisibilityForIds = (
+  photoIds: string[],
+  hidden: boolean,
+  excludeFromFeeds: boolean,
+) =>
+  safelyQuery(() => query(`
+    UPDATE photos SET
+      hidden = $1,
+      exclude_from_feeds = $2,
+      updated_at = $3
+    WHERE id = ANY($4)
+  `, [
+    hidden,
+    excludeFromFeeds,
+    (new Date()).toISOString(),
+    convertArrayToPostgresString(photoIds),
+  ]), 'setPhotoVisibilityForIds');
 
 export const addTagsToPhotos = (tags: string[], photoIds: string[]) =>
   safelyQuery(() => query(`
@@ -358,6 +411,21 @@ export const getRecipeTitleForData = async (
     .then(({ rows }) => rows[0]?.recipe_title as string | undefined)
   , 'getRecipeTitleForData');
 
+export const getRecipeDataForTitle = async (title: string) =>
+  safelyQuery(() => sql`
+    SELECT recipe_data FROM photos
+    WHERE hidden IS NOT TRUE
+    AND recipe_title=${title}
+    AND recipe_data IS NOT NULL
+    AND recipe_data::text <> 'null'
+    ORDER BY taken_at DESC
+    LIMIT 1
+  `
+    .then(({ rows }) => rows[0]?.recipe_data
+      ? JSON.stringify(rows[0].recipe_data)
+      : undefined)
+  , 'getRecipeDataForTitle');
+
 export const getPhotosNeedingRecipeTitleCount = async (
   data: string,
   film: string,
@@ -486,7 +554,7 @@ export const getPhotos = async (options: PhotoQueryOptions = {}) =>
 export const getPhotoIds = async (options: PhotoQueryOptions = {}) =>
   safelyQuery(
     async () => _getPhotos(options, ['id'], { shouldParse: false })
-      .then(({ photos }) => photos.map(photo => photo.id)),
+      .then(({ photos }) => photos.map(photo => photo.id as string)),
     'getPhotoIds',
     // Seemingly necessary to pass `options` for expected cache behavior
     options,

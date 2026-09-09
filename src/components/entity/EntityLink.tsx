@@ -1,6 +1,12 @@
 'use client';
 
-import { ComponentProps, ReactNode, RefObject, useState } from 'react';
+import {
+  ComponentProps,
+  MouseEventHandler,
+  ReactNode,
+  RefObject,
+  useState,
+} from 'react';
 import LabeledIcon, { LabeledIconType } from '../primitives/LabeledIcon';
 import Badge from '../Badge';
 import { clsx } from 'clsx/lite';
@@ -8,7 +14,7 @@ import LinkWithStatus from '../LinkWithStatus';
 import Spinner from '../Spinner';
 import ResponsiveText from '../primitives/ResponsiveText';
 import { SHOW_CATEGORY_IMAGE_HOVERS } from '@/app/config';
-import EntityHover from './EntityHover';
+import PhotosHover from '@/photo/PhotosHover';
 import { getPhotosCachedAction } from '@/photo/actions';
 import { PhotoQueryOptions } from '@/db';
 import { MAX_PHOTOS_TO_SHOW_PER_CATEGORY } from '@/image-response';
@@ -43,6 +49,7 @@ export default function EntityLink({
   contrast = 'medium',
   path = '', // Make link optional for debugging purposes
   pathTarget,
+  onClick,
   hoverCount = 0,
   hoverType = 'auto',
   hoverQueryOptions,
@@ -64,6 +71,7 @@ export default function EntityLink({
   iconWide?: boolean
   path?: string
   pathTarget?: ComponentProps<typeof LinkWithStatus>['target']
+  onClick?: MouseEventHandler<HTMLAnchorElement>
   prefetch?: boolean
   title?: string
   action?: ReactNode
@@ -128,6 +136,7 @@ export default function EntityLink({
       isLoading={isLoading}
       setIsLoading={setIsLoading}
       target={pathTarget}
+      onClick={onClick}
     >
       <LabeledIcon {...{
         icon: badged && hasBadgeIcon && !useForHover
@@ -192,7 +201,7 @@ export default function EntityLink({
       )}
     >
       {showHoverImage
-        ? <EntityHover
+        ? <PhotosHover
           hoverKey={path}
           header={renderLink(true)}
           photosCount={hoverCount}
@@ -204,10 +213,10 @@ export default function EntityLink({
           color={contrast === 'frosted' ? 'frosted' : undefined}
         >
           {renderLink()}
-        </EntityHover>
+        </PhotosHover>
         : renderLink()}
       {action &&
-        <span className="action">
+        <span className="action shrink-0">
           {action}
         </span>}
       {showHoverText &&

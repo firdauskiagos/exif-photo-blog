@@ -19,7 +19,7 @@ import { SWRKey } from '@/swr';
 export type AppStateContextType = {
   // CORE
   hasLoadedWithAnimations?: boolean
-  invalidateSwr?: (key?: SWRKey, revalidate?: boolean) => void
+  invalidateSwr?: (args?: { key?: SWRKey, revalidate?: boolean }) => void
   nextPhotoAnimation?: AnimationConfig
   setNextPhotoAnimation?: (animationConfig?: AnimationConfig) => void
   getNextPhotoAnimationId?: () => string
@@ -35,6 +35,9 @@ export type AppStateContextType = {
   // MODAL
   isCommandKOpen?: boolean
   setIsCommandKOpen?: Dispatch<SetStateAction<boolean>>
+  // Seeds the search field the next time the command menu opens
+  nextCommandKQuery?: string
+  setNextCommandKQuery?: Dispatch<SetStateAction<string | undefined>>
   shareModalProps?: ShareModalProps
   setShareModalProps?: Dispatch<SetStateAction<ShareModalProps | undefined>>
   recipeModalProps?: RecipeProps
@@ -57,12 +60,18 @@ export type AppStateContextType = {
   insightsIndicatorStatus?: InsightsIndicatorStatus
   // UPLOAD
   startUpload?: () => Promise<boolean>
+  startUploadSession?: () => AbortSignal
+  cancelUpload?: () => void
   uploadInputRef?: RefObject<HTMLInputElement | null>
   uploadState: UploadState
   setUploadState?: (uploadState: Partial<UploadState>) => void
   resetUploadState?: () => void
+  // VIEW
+  isPhotoSetFull?: boolean
+  setIsPhotoSetFull?: Dispatch<SetStateAction<boolean>>
   // DEBUG
   areAdminDebugToolsEnabled?: boolean
+  isAdminAiModelDebugEnabled?: boolean
   isGridHighDensity?: boolean
   setIsGridHighDensity?: Dispatch<SetStateAction<boolean>>
   areZoomControlsShown?: boolean

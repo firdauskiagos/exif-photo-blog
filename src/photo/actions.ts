@@ -4,7 +4,9 @@ import {
   insertPhoto,
   deletePhotoTagGlobally,
   updatePhoto,
+  updatePhotoTitleCaption,
   renamePhotoTagGlobally,
+  setPhotoVisibilityForIds,
   getPhoto,
   getPhotos,
   addTagsToPhotos,
@@ -12,6 +14,7 @@ import {
   deletePhotoRecipeGlobally,
   renamePhotoRecipeGlobally,
   getPhotosNeedingRecipeTitleCount,
+  getRecipeDataForTitle,
   updateColorDataForPhoto,
   getColorDataForPhotos,
   getPhotoIds,
@@ -61,6 +64,7 @@ import { streamOpenAiImageQuery } from '@/platforms/openai';
 import {
   AI_TEXT_AUTO_GENERATED_FIELDS,
   AI_CONTENT_GENERATION_ENABLED,
+  AUTO_GENERATE_LOCATIONS,
   BLUR_ENABLED,
 } from '@/app/config';
 import { generateAiImageQueries } from './ai/server';
@@ -84,6 +88,11 @@ import {
 } from '@/album/server';
 import { addPhotoAlbumIds } from '@/album/query';
 import { getStorageUrlsForPhoto } from './storage';
+import type { VisibilityValue } from './visibility';
+import {
+  COMMAND_K_PHOTO_LIMIT,
+  getPhotosQueryData,
+} from '@/query/data';
 
 // Private actions
 
@@ -154,6 +163,7 @@ const addUpload = async ({
     includeInitialPhotoFields: true,
     generateBlurData: BLUR_ENABLED,
     generateResizedImage: AI_CONTENT_GENERATION_ENABLED,
+    lookupLocation: AUTO_GENERATE_LOCATIONS,
   });
 
   if (formDataFromExif) {
@@ -362,14 +372,16 @@ export const toggleFavoritePhotoAction = async (
     }
   });
 
-export const togglePrivatePhotoAction = async (
+export const setPhotoVisibilityAction = async (
   photoId: string,
+  visibility: VisibilityValue,
   redirectPath?: string,
 ) =>
   runAuthenticatedAdminServerAction(async () => {
     const photo = await getPhoto(photoId, true);
     if (photo) {
-      photo.hidden = !photo.hidden;
+      photo.hidden = visibility === 'private';
+      photo.excludeFromFeeds = visibility === 'exclude';
       await updatePhoto(convertPhotoToPhotoDbInsert(photo));
       revalidateAllKeysAndPaths();
     }
@@ -438,6 +450,11 @@ export const getPhotosNeedingRecipeTitleCountAction = async (
       film,
       photoIdToExclude,
     ),
+  );
+
+export const getRecipeDataForTitleAction = async (recipeTitle: string) =>
+  runAuthenticatedAdminServerAction(async () =>
+    await getRecipeDataForTitle(recipeTitle),
   );
 
 export const storeColorDataForPhotoAction = async (photoId: string) =>
@@ -725,12 +742,14 @@ export const batchPhotoAction = async ({
   photoOptions,
   tags = [],
   albumTitles = [],
+  visibility,
   action,
 }: {
   photoIds?: string[]
   photoOptions?: PhotoQueryOptions
   tags?: string[]
   albumTitles?: string[]
+  visibility?: VisibilityValue
   action?: 'favorite' | 'delete'
 }) => runAuthenticatedAdminServerAction(async () => {
   const photoIds = _photoIds.length > 0
@@ -746,6 +765,13 @@ export const batchPhotoAction = async ({
     const albumIds = await createAlbumsAndGetIds(albumTitles);
     await addPhotoAlbumIds(photoIds, albumIds);
   }
+  if (visibility !== undefined) {
+    await setPhotoVisibilityForIds(
+      photoIds,
+      visibility === 'private',
+      visibility === 'exclude',
+    );
+  }
   switch (action) {
     case 'favorite':
       await addTagsToPhotos([TAG_FAVS], photoIds);
@@ -760,6 +786,21 @@ export const batchPhotoAction = async ({
       break;
   }
 
+  revalidateAllKeysAndPaths();
+});
+
+export const batchUpdatePhotoTitlesAction = async (
+  updates: {
+    photoId: string
+    title: string
+    caption: string
+  }[],
+) => runAuthenticatedAdminServerAction(async () => {
+  await updatePhotoTitleCaption(
+    updates.map(({ photoId }) => photoId),
+    updates.map(({ title }) => title.trim() || null),
+    updates.map(({ caption }) => caption.trim() || null),
+  );
   revalidateAllKeysAndPaths();
 });
 
@@ -799,8 +840,9 @@ export const getPhotosCachedAction = async (
 // Public actions
 
 export const searchPhotosPublicAction = async (query: string) =>
-  getPhotos({ query, limit: 10 })
+  getPhotosQueryData({ query, limit: COMMAND_K_PHOTO_LIMIT })
+    .then(([photos, { count }]) => ({ photos, count }))
     .catch(e => {
       console.error('Could not query photos', e);
-      return [] as Photo[];
+      return { photos: [] as Photo[], count: 0 };
     });

@@ -2,10 +2,14 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 import stylistic from '@stylistic/eslint-plugin';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
 
 export default defineConfig([
   ...nextVitals,
   ...nextTs,
+  // Rules only: eslint-config-next already registers the jsx-a11y plugin,
+  // and redefining it errors
+  { rules: jsxA11y.flatConfigs.recommended.rules },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
