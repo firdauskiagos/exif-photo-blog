@@ -1,30 +1,27 @@
 import { getStorageUploadUrlsNoStore } from '@/platforms/storage/cache';
-import AppGrid from '@/components/AppGrid';
 import { getUniqueTagsCached } from '@/photo/cache';
 import { getAlbumsWithMetaCached } from '@/album/cache';
 import AdminUploadsClient from '@/admin/AdminUploadsClient';
-import { redirect } from 'next/navigation';
-import { PATH_ADMIN_PHOTOS } from '@/app/path';
+import { PRESERVE_ORIGINAL_UPLOADS } from '@/app/config';
 
 export const maxDuration = 60;
 
 export default async function AdminUploadsPage() {
   const urls = await getStorageUploadUrlsNoStore();
-  const uniqueAlbums = await getAlbumsWithMetaCached();
-  const uniqueTags = await getUniqueTagsCached();
 
-  if (urls.length === 0) {
-    redirect(PATH_ADMIN_PHOTOS);
-  } else {
-    return (
-      <AppGrid
-        contentMain={
-          <AdminUploadsClient {...{
-            urls,
-            uniqueAlbums,
-            uniqueTags,
-          }} />}
-      />
-    );
-  }
+  const [uniqueAlbums, uniqueTags] = urls.length > 0
+    ? await Promise.all([
+      getAlbumsWithMetaCached(),
+      getUniqueTagsCached(),
+    ])
+    : [[], []];
+
+  return (
+    <AdminUploadsClient {...{
+      urls,
+      uniqueAlbums,
+      uniqueTags,
+      shouldResize: !PRESERVE_ORIGINAL_UPLOADS,
+    }} />
+  );
 }

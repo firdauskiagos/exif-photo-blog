@@ -11,6 +11,7 @@ import {
   deletePhotoAction,
   replacePhotoStorageAction,
   setPhotoVisibilityAction,
+  storeColorDataForPhotoAction,
   syncPhotoAction,
   toggleFavoritePhotoAction,
 } from '@/photo/actions';
@@ -27,7 +28,12 @@ import { renderMenuItemCheck } from '@/components/more/MoreMenuItem';
 import { useAppState } from '@/app/AppState';
 import { RevalidatePhoto } from '@/photo/InfinitePhotoScroll';
 import { MdOutlineFileDownload } from 'react-icons/md';
+import { IoMdColorFilter } from 'react-icons/io';
+import { FaArrowRight } from 'react-icons/fa6';
 import IconGrSync from '@/components/icons/IconGrSync';
+import { toastSuccess } from '@/toast';
+import ColorDot from '@/photo/color/ColorDot';
+import { getKeyColorFromPhoto } from '@/photo/color/client';
 import InsightsIndicatorDot from './insights/InsightsIndicatorDot';
 import IconFavs from '@/components/icons/IconFavs';
 import IconEdit from '@/components/icons/IconEdit';
@@ -148,6 +154,7 @@ export default function AdminPhotoMenu({
           }),
       })),
     });
+    const keyColor = getKeyColorFromPhoto(photo);
     items.push({
       label: appText.admin.sync,
       labelComplex: <span className="inline-flex items-center gap-2">
@@ -169,6 +176,39 @@ export default function AdminPhotoMenu({
         />,
         action: () => syncPhotoAction(photo.id)
           .then(() => revalidatePhoto?.(photo.id)),
+      }, {
+        label: appText.admin.syncUpdateColor,
+        icon: keyColor
+          ? <ColorDot
+            color={keyColor}
+            includeTooltip={false}
+            size="medium"
+            className="translate-x-[-1px] translate-y-[1px]"
+          />
+          : <IoMdColorFilter
+            size={16}
+            className="translate-x-[-1px]  translate-y-[1px]"
+          />,
+        action: () => storeColorDataForPhotoAction(photo.id, { force: true })
+          .then(result => {
+            revalidatePhoto?.(photo.id);
+            if (result) {
+              toastSuccess(
+                <span className="inline-flex items-center gap-1.5">
+                  {appText.admin.syncUpdateColorSuccess}
+                  <ColorDot
+                    color={result.oldColor}
+                    includeTooltip={false}
+                  />
+                  <FaArrowRight size={10} className="text-dim" />
+                  <ColorDot
+                    color={result.newColor}
+                    includeTooltip={false}
+                  />
+                </span>,
+              );
+            }
+          }),
       }, {
         label: appText.admin.syncOverwrite,
         icon: <IconWarning className="translate-x-[-1.5px]" />,
@@ -263,7 +303,9 @@ export default function AdminPhotoMenu({
         }}/>
         <ImageInput
           ref={inputRef}
+          id={`admin-photo-file-${photo.id}`}
           multiple={false}
+          hidden
           onBlobReady={async ({ blob, extension }) =>
             uploadPhotoFromClient(blob, extension)
               .then(updatedStorageUrl =>

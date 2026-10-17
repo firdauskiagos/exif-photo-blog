@@ -3,6 +3,8 @@ import {
   ReactNode,
   useCallback,
   useEffect,
+  useId,
+  useRef,
   useState,
 } from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
@@ -11,7 +13,25 @@ import { FiMoreHorizontal } from 'react-icons/fi';
 import MoreMenuItem from './MoreMenuItem';
 import { clearGlobalFocus } from '@/utility/dom';
 import { FaChevronRight } from 'react-icons/fa6';
-import { MENU_SURFACE_STYLES } from '../primitives/surface';
+import {
+  getMenuItemColorClasses,
+  MENU_SURFACE_STYLES,
+} from '../primitives/surface';
+
+type MoreMenuOpenListener = (menuId: string) => void;
+
+const moreMenuOpenListeners = new Set<MoreMenuOpenListener>();
+
+const subscribeToMoreMenuOpen = (listener: MoreMenuOpenListener) => {
+  moreMenuOpenListeners.add(listener);
+  return () => {
+    moreMenuOpenListeners.delete(listener);
+  };
+};
+
+const notifyMoreMenuOpen = (menuId: string) => {
+  moreMenuOpenListeners.forEach(listener => listener(menuId));
+};
 
 export type MoreMenuSubmenu = {
   label: string
@@ -21,12 +41,12 @@ export type MoreMenuSubmenu = {
   | { items: ComponentProps<typeof MoreMenuItem>[], sections?: never }
   // Sections render as groups separated by a dividing line
   | { sections: MoreMenuSection[], items?: never }
-)
+);
 
 export type MoreMenuSection = {
   label?: string
   items: (ComponentProps<typeof MoreMenuItem> | MoreMenuSubmenu)[]
-}
+};
 
 const isSubmenu = (
   item: MoreMenuSection['items'][number],
@@ -62,10 +82,24 @@ export default function MoreMenu({
   onOpen?: () => void
   disabled?: boolean
 } & ComponentProps<typeof DropdownMenu.Content>){
+  const menuId = useId();
   const [isOpenInternal, setIsOpenInternal] = useState(isOpenProp ?? false);
+  const setOpenStateRef = useRef(setIsOpenProp ?? setIsOpenInternal);
+  setOpenStateRef.current = setIsOpenProp ?? setIsOpenInternal;
 
   const isOpen = isOpenProp ?? isOpenInternal;
-  const setIsOpen = setIsOpenProp ?? setIsOpenInternal;
+
+  const setIsOpen = useCallback((open: boolean) => {
+    // Close other more menus before this one opens
+    if (open) { notifyMoreMenuOpen(menuId); }
+    setOpenStateRef.current(open);
+  }, [menuId]);
+
+  useEffect(() => subscribeToMoreMenuOpen(openMenuId => {
+    if (openMenuId !== menuId) {
+      setOpenStateRef.current(false);
+    }
+  }), [menuId]);
 
   const dismissMenu = useCallback(() => {
     setIsOpen(false);
@@ -96,28 +130,34 @@ export default function MoreMenu({
             isSubmenu(item)
               ? <DropdownMenu.DropdownMenuSub key={item.label}>
                 <DropdownMenu.SubTrigger asChild>
-                  <div className="mx-1 focus:outline-none">
+                  <div className="px-1 focus:outline-none">
                     <div className={clsx(
-                      'link outline-none focus:outline-none',
-                      'inline-flex w-full items-center h-8.5',
-                      'rounded-sm p-2.5',
-                      'items-center gap-1.5',
+                      'outline-none focus:outline-none',
+                      'flex items-center h-8.5 gap-4',
+                      'px-2 py-2 rounded-lg',
                       'text-sm text-main hover:text-main',
-                      'hover:bg-gray-100/90 active:bg-gray-200/75',
-                      'dark:hover:bg-gray-800/60 dark:active:bg-gray-900/80',
+                      getMenuItemColorClasses(),
                       'select-none',
                       'cursor-pointer',
                       'whitespace-nowrap',
                     )}>
-                      {item.icon && <div className="w-4.5">
-                        {item.icon}
-                      </div>}
-                      <span className="grow min-w-0 text-left">
-                        {item.labelComplex ?? item.label}
+                      <span className={clsx(
+                        'inline-flex items-center gap-1.5 grow min-w-0',
+                      )}>
+                        {item.icon &&
+                          <span className={clsx(
+                            'inline-flex items-center justify-center',
+                            'min-w-[1.25rem] h-6 shrink-0',
+                          )}>
+                            {item.icon}
+                          </span>}
+                        <span className="grow min-w-0 text-left">
+                          {item.labelComplex ?? item.label}
+                        </span>
                       </span>
                       <FaChevronRight
                         size={11}
-                        className="text-dim ml-1"
+                        className="text-dim shrink-0"
                       />
                     </div>
                   </div>
@@ -125,6 +165,7 @@ export default function MoreMenu({
                 <DropdownMenu.Portal>
                   <DropdownMenu.SubContent
                     className={MENU_SURFACE_STYLES}
+                    sideOffset={-4}
                   >
                     {renderSections(item.sections ?? [{ items: item.items }])}
                   </DropdownMenu.SubContent>

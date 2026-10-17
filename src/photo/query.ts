@@ -1,9 +1,12 @@
-/* eslint-disable quotes */
+/* eslint-disable @stylistic/quotes */
 import {
   sql,
   query,
 } from '@/platforms/postgres';
-import { convertArrayToPostgresString } from '@/db';
+import {
+  convertArrayToPostgresString,
+  parameterizeForDb,
+} from '@/db';
 import {
   PhotoDb,
   PhotoDbInsert,
@@ -306,45 +309,52 @@ export const getPhotosMostRecentUpdate = async () =>
   `.then(({ rows }) => rows[0] ? rows[0].updated_at as Date : undefined)
   , 'getPhotosMostRecentUpdate');
 
-export const getUniqueCameras = async () =>
-  safelyQuery(() => sql`
-    SELECT DISTINCT make||' '||model as camera, make, model,
-      COUNT(*),
-      MAX(updated_at) as last_modified
+export const getUniqueCameras = async (includeHidden?: boolean) =>
+  safelyQuery(() => query(`
+    SELECT
+      MIN(make) AS make,
+      MIN(model) AS model,
+      COUNT(*) AS count,
+      MAX(updated_at) AS last_modified
     FROM photos
-    WHERE hidden IS NOT TRUE
-    AND trim(make) <> ''
+    WHERE trim(make) <> ''
     AND trim(model) <> ''
-    GROUP BY make, model
-    ORDER BY camera ASC
-  `.then(({ rows }): Cameras => rows.map(({
-      make, model, count, last_modified,
-    }) => ({
-      cameraKey: createCameraKey({ make, model }),
-      camera: { make, model },
+    ${includeHidden ? '' : 'AND hidden IS NOT TRUE'}
+    GROUP BY
+      ${parameterizeForDb('make')},
+      ${parameterizeForDb('model')}
+    ORDER BY 1, 2
+  `).then(({ rows }): Cameras => rows.map(({
+    make, model, count, last_modified,
+  }) => ({
+    cameraKey: createCameraKey({ make, model }),
+    camera: { make, model },
+    count: parseInt(count, 10), 
+    lastModified: last_modified as Date,
+  })))
+  , 'getUniqueCameras');
+
+export const getUniqueLenses = async (includeHidden?: boolean) =>
+  safelyQuery(() => query(`
+    SELECT
+      MIN(lens_make) AS lens_make,
+      MIN(lens_model) AS lens_model,
+      COUNT(*) AS count,
+      MAX(updated_at) AS last_modified
+    FROM photos
+    WHERE trim(lens_model) <> ''
+    ${includeHidden ? '' : 'AND hidden IS NOT TRUE'}
+    GROUP BY
+      ${parameterizeForDb('lens_make')},
+      ${parameterizeForDb('lens_model')}
+    ORDER BY 1, 2
+  `).then(({ rows }): Lenses => rows
+    .map(({ lens_make: make, lens_model: model, count, last_modified }) => ({
+      lensKey: createLensKey({ make, model }),
+      lens: { make, model },
       count: parseInt(count, 10), 
       lastModified: last_modified as Date,
     })))
-  , 'getUniqueCameras');
-
-export const getUniqueLenses = async () =>
-  safelyQuery(() => sql`
-    SELECT DISTINCT lens_make||' '||lens_model as lens,
-      lens_make, lens_model,
-      COUNT(*),
-      MAX(updated_at) as last_modified
-    FROM photos
-    WHERE hidden IS NOT TRUE
-    AND trim(lens_model) <> ''
-    GROUP BY lens_make, lens_model
-    ORDER BY lens ASC
-  `.then(({ rows }): Lenses => rows
-      .map(({ lens_make: make, lens_model: model, count, last_modified }) => ({
-        lensKey: createLensKey({ make, model }),
-        lens: { make, model },
-        count: parseInt(count, 10), 
-        lastModified: last_modified as Date,
-      })))
   , 'getUniqueLenses');
 
 export const getUniqueTags = async (includeHidden?: boolean) =>
@@ -477,7 +487,9 @@ export const getUniqueFocalLengths = async () =>
       COUNT(*),
       MAX(updated_at) as last_modified
     FROM photos
-    WHERE hidden IS NOT TRUE AND focal_length IS NOT NULL
+    WHERE hidden IS NOT TRUE
+    AND focal_length IS NOT NULL
+    AND focal_length > 0
     GROUP BY focal_length
     ORDER BY focal_length ASC
   `.then(({ rows }): FocalLengths => rows
@@ -690,7 +702,7 @@ export const getPhoto = async (
     const photoId = translatePhotoId(id);
     return (includeHidden
       ? sql<PhotoDb>`SELECT * FROM photos WHERE id=${photoId} LIMIT 1`
-      // eslint-disable-next-line max-len
+      // eslint-disable-next-line @stylistic/max-len
       : sql<PhotoDb>`SELECT * FROM photos WHERE id=${photoId} AND hidden IS NOT TRUE LIMIT 1`)
       .then(({ rows }) => rows.map(parsePhotoFromDb))
       .then(photos => photos.length > 0 ? photos[0] : undefined);
@@ -719,12 +731,13 @@ const needsAiTextWhereClauses =
       })
     : [];
 
-const needsColorDataWhereClauses = COLOR_SORT_ENABLED
-  ? [`(
+const needsColorDataWhereClauses =
+  AI_CONTENT_GENERATION_ENABLED || COLOR_SORT_ENABLED
+    ? [`(
     color_data IS NULL OR
     color_sort IS NULL
   )`]
-  : [];
+    : [];
 
 const needsSyncWhereStatement =
   `WHERE ${[

@@ -33,7 +33,7 @@ import { LiaBroomSolid } from 'react-icons/lia';
 import { IoMdGrid } from 'react-icons/io';
 import { RiSpeedMiniLine } from 'react-icons/ri';
 import AdminLink from '../AdminLink';
-import AdminEmptyState from '../AdminEmptyState';
+import EmptyState from '@/components/EmptyState';
 import { pluralize } from '@/utility/string';
 import Tooltip from '@/components/Tooltip';
 import { useAppState } from '@/app/AppState';
@@ -305,7 +305,7 @@ export default function AdminAppInsightsClient({
             icon={<IconNext className="translate-y-px" />}
             content={<>
               <Link
-                // eslint-disable-next-line max-len
+                // eslint-disable-next-line @stylistic/max-len
                 href={`https://github.com/vercel/next.js/releases/tag/v${nextVersion}`}
                 target="blank"
               >
@@ -313,7 +313,7 @@ export default function AdminAppInsightsClient({
               </Link>
               {' '}
               <Link
-                // eslint-disable-next-line max-len
+                // eslint-disable-next-line @stylistic/max-len
                 href={`https://github.com/facebook/react/releases/tag/v${reactVersion}`}
                 className="text-dim hover:text-medium active:text-dim"
                 target="blank"
@@ -325,7 +325,7 @@ export default function AdminAppInsightsClient({
           {nodeVersion && <ScoreCardRow
             icon={<IconNode className="translate-y-px" />}
             content={<Link
-              // eslint-disable-next-line max-len
+              // eslint-disable-next-line @stylistic/max-len
               href={`https://github.com/nodejs/node/releases/tag/v${nodeVersion}`}
               target="blank"
             >
@@ -522,12 +522,12 @@ export default function AdminAppInsightsClient({
               </>}
             />}
           </>
-          : <AdminEmptyState
+          : <EmptyState
             icon={<IoCheckmarkCircleOutline />}
             includeContainer={false}
           >
             No recommendations found
-          </AdminEmptyState>}
+          </EmptyState>}
       </ScoreCard>
       <ScoreCard title="Library Stats">
         {(photosNeedSync || debug) && <ScoreCardRow

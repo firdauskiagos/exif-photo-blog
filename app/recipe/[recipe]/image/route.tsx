@@ -1,7 +1,7 @@
 import { getPhotosCached } from '@/photo/cache';
 import {
   IMAGE_OG_DIMENSION_SMALL,
-  MAX_PHOTOS_TO_SHOW_PER_CATEGORY,
+  PHOTO_PREVIEW_QUERY_OPTIONS,
 } from '@/image-response';
 import { getIBMPlexMono } from '@/app/font';
 import { ImageResponse } from 'next/og';
@@ -28,7 +28,7 @@ export async function GET(
     { fontFamily, fonts },
     headers,
   ] = await Promise.all([
-    getPhotosCached({ recipe, limit: MAX_PHOTOS_TO_SHOW_PER_CATEGORY }),
+    getPhotosCached({ recipe, ...PHOTO_PREVIEW_QUERY_OPTIONS }),
     getIBMPlexMono(),
     getImageResponseCacheControlHeaders(),
   ]);

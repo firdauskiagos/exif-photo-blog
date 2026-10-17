@@ -50,7 +50,7 @@ export const TEXT: I18N = {
     full: 'Toàn bộ',
     grid: 'Lưới',
     viewOptions: 'Tùy chọn xem',
-    about: 'Giới thiệu',
+    library: 'Thư viện',
     admin: 'Quản trị',
     search: 'Tìm kiếm',
     prev: 'Trước',
@@ -58,7 +58,7 @@ export const TEXT: I18N = {
     next: 'Tiếp',
     nextShort: 'Tiếp',
   },
-  about: {
+  library: {
     titleDefault: 'Giới thiệu trang web',
     updated: 'Cập nhật {{distance}} trước',
     photoCount: 'Số lượng ảnh',
@@ -70,9 +70,6 @@ export const TEXT: I18N = {
     recentAlbum: 'Album gần đây',
     popularTag: 'Thẻ phổ biến',
     popularPlace: 'Địa điểm phổ biến',
-  },
-  footer: {
-    madeWith: 'Được tạo bằng',
   },
   sort: {
     sort: 'Sắp xếp',
@@ -107,6 +104,7 @@ export const TEXT: I18N = {
     recipeCopy: 'Sao chép văn bản công thức',
     download: 'Tải xuống tệp gốc',
     sharePhoto: 'Chia sẻ ảnh',
+    sharePhotos: 'Chia sẻ các ảnh',
     shareCopy: 'Sao chép liên kết',
     shareTo: 'Chia sẻ...',
     shareX: 'Chia sẻ trên X',
@@ -145,8 +143,11 @@ export const TEXT: I18N = {
     selectPhotosExit: 'Dừng chọn',
     editTitles: 'Chỉnh sửa tiêu đề...',
     editTitlesExit: 'Dừng chỉnh sửa tiêu đề',
+    app: 'Cài đặt ứng dụng',
     appInsights: 'Thống kê ứng dụng',
+    appInsightsShort: 'Thống kê',
     appConfig: 'Cấu hình ứng dụng',
+    appConfigShort: 'Cấu hình',
     clearCache: 'Xóa bộ nhớ cache',
     clearCacheSuccess: 'Đã xóa bộ nhớ cache của trang web',
     edit: 'Chỉnh sửa',
@@ -157,15 +158,17 @@ export const TEXT: I18N = {
     download: 'Tải xuống',
     sync: 'Đồng bộ',
     syncAutomatic: 'Tự động',
+    syncUpdateColor: 'Cập nhật màu',
+    syncUpdateColorSuccess: 'Đã cập nhật màu:',
     syncOverwrite: 'Ghi đè',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     syncOverwriteConfirm: 'Bạn có chắc chắn muốn ghi đè tất cả các trường ảnh? Dữ liệu tùy chỉnh có thể bị mất.',
     reupload: 'Tải lên lại',
     delete: 'Xóa',
     deleteConfirm: 'Bạn có chắc chắn muốn xóa "{{photoTitle}}?"',
     setVisibility: 'Chế độ hiển thị',
     setVisibilityPlaceholder: 'Đặt chế độ hiển thị cho {{quantity}} ...',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     setVisibilityConfirm: 'Bạn có chắc chắn muốn đặt chế độ hiển thị thành "{{visibility}}" cho {{quantity}}?',
     setVisibilitySuccess: 'Đã cập nhật chế độ hiển thị cho {{quantity}}',
     visibilityDefault: 'Mặc định',
@@ -182,17 +185,17 @@ export const TEXT: I18N = {
     selectAll: 'Chọn tất cả',
     apply: 'Áp dụng',
     tagPlaceholder: 'Gắn thẻ {{quantity}} ...',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     tagConfirm: 'Bạn có chắc chắn muốn áp dụng thẻ cho {{quantity}}? Hành động này không thể hoàn tác.',
     tagSuccess: 'Đã gắn thẻ {{tags}} cho {{quantity}}',
     albumPlaceholder: 'Thêm {{quantity}} vào album ...',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     albumConfirm: 'Bạn có chắc chắn muốn thêm {{quantity}} vào các album này? Hành động này không thể hoàn tác.',
     albumSuccess: 'Đã thêm {{quantity}} vào {{albums}}',
     favoriteConfirm: 'Bạn có chắc chắn muốn yêu thích {{quantity}}?',
     favoriteSuccess: 'Đã yêu thích {{quantity}}',
     batchActionFailure: 'Đã xảy ra lỗi khi cập nhật {{quantity}}',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     deletePhotosConfirm: 'Bạn có chắc chắn muốn xóa {{quantity}}? Hành động này không thể hoàn tác.',
     deletePhotosSuccess: 'Đã xóa {{quantity}}',
     deletePhotosFailure: 'Đã xảy ra lỗi khi xóa {{quantity}}',
@@ -202,7 +205,7 @@ export const TEXT: I18N = {
     setupIncomplete: 'Hoàn tất cài đặt',
     setupSignIn: 'Đăng nhập để tải lên ảnh',
     setupFirstPhoto: 'Thêm ảnh đầu tiên của bạn',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     setupConfig: 'Thay đổi tên trang web và cấu hình khác bằng cách chỉnh sửa các biến môi trường được tham chiếu trong',
   },
   utility: {
@@ -217,5 +220,6 @@ export const TEXT: I18N = {
     copyPhrase: '{{label}} đã sao chép',
     paginate: '{{index}} của {{count}}',
     paginateAction: '{{action}} {{index}} của {{count}}',
+    madeWith: 'Được tạo bằng',
   },
 };

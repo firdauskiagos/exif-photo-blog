@@ -31,7 +31,7 @@ export default function PhotoHeader({
   count,
   dateRange,
   richContent,
-  hasAiTextGeneration,
+  hasAiContentGeneration,
   includeShareButton,
   ...categories
 }: {
@@ -45,7 +45,7 @@ export default function PhotoHeader({
   count?: number
   dateRange?: PhotoDateRangePostgres
   richContent?: ReactNode
-  hasAiTextGeneration: boolean
+  hasAiContentGeneration: boolean
   includeShareButton?: boolean
 } & PhotoSetCategory) {
   const { isGridHighDensity } = useAppState();
@@ -73,15 +73,18 @@ export default function PhotoHeader({
     <PhotoPrevNextActions {...{
       photo: selectedPhoto,
       photos,
-      hasAiTextGeneration,
+      hasAiContentGeneration,
       ...categories,
     }} />;
 
   const renderDateRange =
     <span className="text-dim uppercase text-right">
-      {start === end
-        ? start
-        : <>{end}<br />&ndash; {start}</>}
+      {start || end
+        ? start === end
+          ? start
+          : <>{end}<br />&ndash; {start}</>
+        // Keep the two-line date slot when a set has no photos
+        : <>&nbsp;<br />&nbsp;</>}
     </span>;
 
   const renderContentA = entity

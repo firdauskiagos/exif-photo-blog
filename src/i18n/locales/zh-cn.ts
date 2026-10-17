@@ -50,7 +50,7 @@ export const TEXT: I18N = {
     full: '完整',
     grid: '网格',
     viewOptions: '视图选项',
-    about: '关于',
+    library: '图库',
     admin: '管理',
     search: '搜索',
     prev: '上一页',
@@ -58,7 +58,7 @@ export const TEXT: I18N = {
     next: '下一页',
     nextShort: '下一页',
   },
-  about: {
+  library: {
     titleDefault: '关于本网站',
     updated: '{{distance}} 前更新',
     photoCount: '照片数量',
@@ -70,9 +70,6 @@ export const TEXT: I18N = {
     recentAlbum: '最近相册',
     popularTag: '热门标签',
     popularPlace: '热门地点',
-  },
-  footer: {
-    madeWith: '基于',
   },
   sort: {
     sort: '排序',
@@ -107,6 +104,7 @@ export const TEXT: I18N = {
     recipeCopy: '复制预设文本',
     download: '下载原始文件',
     sharePhoto: '分享照片',
+    sharePhotos: '分享照片',
     shareCopy: '复制链接',
     shareTo: '分享 ...',
     shareX: '在 X 上分享',
@@ -145,8 +143,11 @@ export const TEXT: I18N = {
     selectPhotosExit: '停止选择',
     editTitles: '编辑标题...',
     editTitlesExit: '停止编辑标题',
+    app: '应用设置',
     appInsights: '应用分析',
+    appInsightsShort: '分析',
     appConfig: '应用配置',
+    appConfigShort: '配置',
     clearCache: '清除缓存',
     clearCacheSuccess: '站点缓存已清除',
     edit: '编辑',
@@ -157,6 +158,8 @@ export const TEXT: I18N = {
     download: '下载',
     sync: '同步',
     syncAutomatic: '自动',
+    syncUpdateColor: '更新颜色',
+    syncUpdateColorSuccess: '颜色已更新：',
     syncOverwrite: '覆盖',
     syncOverwriteConfirm: '确定要覆盖所有照片字段吗？自定义数据可能会丢失。',
     reupload: '重新上传',
@@ -211,5 +214,6 @@ export const TEXT: I18N = {
     copyPhrase: '{{label}} 已复制',
     paginate: '第 {{index}} 页，共 {{count}} 页',
     paginateAction: '{{action}} 第 {{index}} 页，共 {{count}} 页',
+    madeWith: '基于',
   },
 };

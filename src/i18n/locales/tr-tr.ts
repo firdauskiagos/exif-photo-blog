@@ -50,7 +50,7 @@ export const TEXT: I18N = {
     full: 'Tam',
     grid: 'Izgara',
     viewOptions: 'Görünüm seçenekleri',
-    about: 'Hakkında',
+    library: 'Kütüphane',
     admin: 'Yönetici',
     search: 'Ara',
     prev: 'Önceki',
@@ -58,7 +58,7 @@ export const TEXT: I18N = {
     next: 'Sonraki',
     nextShort: 'Sonraki',
   },
-  about: {
+  library: {
     titleDefault: 'Site hakkında',
     updated: '{{distance}} önce güncellendi',
     photoCount: 'Fotoğraf sayısı',
@@ -70,9 +70,6 @@ export const TEXT: I18N = {
     recentAlbum: 'Son albüm',
     popularTag: 'Popüler etiket',
     popularPlace: 'Popüler yer',
-  },
-  footer: {
-    madeWith: 'Hazırlayan:',
   },
   sort: {
     sort: 'Sırala',
@@ -107,6 +104,7 @@ export const TEXT: I18N = {
     recipeCopy: 'Tarifi Kopyala',
     download: 'Orijinal Dosyayı İndir',
     sharePhoto: 'Fotoğrafı Paylaş',
+    sharePhotos: 'Fotoğrafları Paylaş',
     shareCopy: 'Bağlantıyı Kopyala',
     shareTo: 'Paylaş ...',
     shareX: 'X\'te Paylaş',
@@ -145,8 +143,11 @@ export const TEXT: I18N = {
     selectPhotosExit: 'Seçmeyi Durdur',
     editTitles: 'Başlıkları Düzenle ...',
     editTitlesExit: 'Başlık Düzenlemeyi Durdur',
+    app: 'Uygulama Ayarları',
     appInsights: 'Uygulama Analizi',
+    appInsightsShort: 'Analiz',
     appConfig: 'Uygulama Yapılandırması',
+    appConfigShort: 'Yapılandırma',
     clearCache: 'Önbelleği Temizle',
     clearCacheSuccess: 'Site önbelleği temizlendi',
     edit: 'Düzenle',
@@ -157,16 +158,18 @@ export const TEXT: I18N = {
     download: 'İndir',
     sync: 'Senkronize Et',
     syncAutomatic: 'Otomatik',
+    syncUpdateColor: 'Rengi güncelle',
+    syncUpdateColorSuccess: 'Renk güncellendi:',
     syncOverwrite: 'Üzerine Yaz',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     syncOverwriteConfirm: 'Tüm fotoğraf alanlarının üzerine yazmak istediğinize emin misiniz? Özelleştirilmiş veriler kaybolabilir.',
     reupload: 'Yeniden Yükle',
     delete: 'Sil',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     deleteConfirm: '"{{photoTitle}}" adlı fotoğrafı silmek istediğinize emin misiniz?',
     setVisibility: 'Görünürlük',
     setVisibilityPlaceholder: '{{quantity}} için görünürlüğü ayarlayın ...',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     setVisibilityConfirm: '{{quantity}} için görünürlüğü "{{visibility}}" olarak ayarlamak istediğinize emin misiniz?',
     setVisibilitySuccess: 'Görünürlük {{quantity}} için güncellendi',
     visibilityDefault: 'Varsayılan',
@@ -183,18 +186,18 @@ export const TEXT: I18N = {
     selectAll: 'Tümünü Seç',
     apply: 'Uygula',
     tagPlaceholder: '{{quantity}} etiketle ...',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     tagConfirm: '{{quantity}} için etiket uygulamak istediğinize emin misiniz? Bu işlem geri alınamaz.',
     tagSuccess: '{{quantity}} {{tags}} olarak etiketlendi',
     albumPlaceholder: '{{quantity}} albümlere ekle ...',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     albumConfirm: '{{quantity}} bu albümlere eklemek istediğinize emin misiniz? Bu işlem geri alınamaz.',
     albumSuccess: '{{quantity}} {{albums}} albümüne eklendi',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     favoriteConfirm: '{{quantity}} favorilere eklemek istediğinize emin misiniz?',
     favoriteSuccess: '{{quantity}} favorilere eklendi',
     batchActionFailure: '{{quantity}} güncellenirken bir sorun oluştu',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     deletePhotosConfirm: '{{quantity}} silmek istediğinize emin misiniz? Bu işlem geri alınamaz.',
     deletePhotosSuccess: '{{quantity}} silindi',
     deletePhotosFailure: '{{quantity}} silinirken bir sorun oluştu',
@@ -204,7 +207,7 @@ export const TEXT: I18N = {
     setupIncomplete: 'Kurulumu Tamamla',
     setupSignIn: 'Fotoğraf yüklemek için giriş yap',
     setupFirstPhoto: 'İlk fotoğrafını ekle',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     setupConfig: 'Site adını ve diğer ayarları değiştirmek için şu ortam değişkenlerini düzenleyin:',
   },
   utility: {
@@ -219,5 +222,6 @@ export const TEXT: I18N = {
     copyPhrase: '{{label}} kopyalandı',
     paginate: '{{count}} fotoğrafın {{index}}.si',
     paginateAction: '{{action}} - {{count}} fotoğrafın {{index}}.si',
+    madeWith: 'Hazırlayan:',
   },
 };

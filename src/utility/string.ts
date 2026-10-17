@@ -6,10 +6,12 @@ export type MakeModelTextLength =
 export const convertStringToArray = (
   string?: string,
   shouldParameterize = true,
+  shouldSplitOnComma = true,
 ) => string
-  ? string.split(',').map(item => shouldParameterize
-    ? parameterize(item)
-    : item.trim())
+  ? (shouldSplitOnComma ? string.split(',') : [string])
+    .map(item => shouldParameterize
+      ? parameterize(item)
+      : item.trim())
   : [];
 
 export const capitalize = (string: string) =>
@@ -72,6 +74,9 @@ export const depluralize = (string: string) =>
   /ses$/i.test(string)
     ? string.replace(/es$/i, '')
     : string.replace(/s$/i, '');
+
+export const startsWithHangingPunctuation = (text: string) =>
+  /^["'“”‘’„‚«»‹›¿¡(\[{—–-]/.test(text);
 
 export const formatCountDescriptive = (
   count: number,

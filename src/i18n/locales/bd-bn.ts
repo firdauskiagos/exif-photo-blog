@@ -50,7 +50,7 @@ export const TEXT: I18N = {
     full: 'সম্পূর্ণ',
     grid: 'গ্রিড',
     viewOptions: 'ভিউ অপশন',
-    about: 'সম্পর্কে',
+    library: 'লাইব্রেরি',
     admin: 'অ্যাডমিন',
     search: 'সার্চ',
     prev: 'পূর্ববর্তী',
@@ -58,7 +58,7 @@ export const TEXT: I18N = {
     next: 'পরবর্তী',
     nextShort: 'পরবর্তী',
   },
-  about: {
+  library: {
     titleDefault: 'এই সাইট সম্পর্কে',
     updated: '{{distance}} আগে আপডেট হয়েছে',
     photoCount: 'ছবির সংখ্যা',
@@ -70,9 +70,6 @@ export const TEXT: I18N = {
     recentAlbum: 'সাম্প্রতিক অ্যালবাম',
     popularTag: 'জনপ্রিয় ট্যাগ',
     popularPlace: 'জনপ্রিয় স্থান',
-  },
-  footer: {
-    madeWith: 'তৈরি হয়েছে',
   },
   sort: {
     sort: 'সাজান',
@@ -107,6 +104,7 @@ export const TEXT: I18N = {
     recipeCopy: 'রেসিপি কপি করুন',
     download: 'মূল ফাইল ডাউনলোড করুন',
     sharePhoto: 'ছবি শেয়ার করুন',
+    sharePhotos: 'ছবিগুলো শেয়ার করুন',
     shareCopy: 'লিংক কপি করুন',
     shareTo: 'শেয়ার করুন ...',
     shareX: 'X এ শেয়ার করুন',
@@ -145,8 +143,11 @@ export const TEXT: I18N = {
     selectPhotosExit: 'নির্বাচন বন্ধ করুন',
     editTitles: 'শিরোনাম এডিট করুন ...',
     editTitlesExit: 'শিরোনাম এডিট বন্ধ করুন',
+    app: 'অ্যাপ সেটিংস',
     appInsights: 'অ্যাপ ইনসাইট',
+    appInsightsShort: 'ইনসাইট',
     appConfig: 'অ্যাপ কনফিগারেশন',
+    appConfigShort: 'কনফিগারেশন',
     clearCache: 'ক্যাশ সাফ করুন',
     clearCacheSuccess: 'সাইট ক্যাশ সাফ করা হয়েছে',
     edit: 'এডিট',
@@ -157,15 +158,17 @@ export const TEXT: I18N = {
     download: 'ডাউনলোড',
     sync: 'সিঙ্ক',
     syncAutomatic: 'স্বয়ংক্রিয়',
+    syncUpdateColor: 'রং আপডেট করুন',
+    syncUpdateColorSuccess: 'রং আপডেট হয়েছে:',
     syncOverwrite: 'ওভাররাইট করুন',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     syncOverwriteConfirm: 'আপনি কি নিশ্চিত যে আপনি সমস্ত ফটো ফিল্ড ওভাররাইট করতে চান? কাস্টমাইজড ডেটা হারিয়ে যেতে পারে।',
     reupload: 'পুনরায় আপলোড করুন',
     delete: 'ডিলিট',
     deleteConfirm: 'আপনি কি "{{photoTitle}}" মুছে ফেলতে চান?',
     setVisibility: 'দৃশ্যমানতা',
     setVisibilityPlaceholder: '{{quantity}}-এর জন্য দৃশ্যমানতা সেট করুন ...',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     setVisibilityConfirm: 'আপনি কি নিশ্চিত যে আপনি {{quantity}}-এর জন্য দৃশ্যমানতা "{{visibility}}" এ সেট করতে চান?',
     setVisibilitySuccess: '{{quantity}}-এর জন্য দৃশ্যমানতা আপডেট হয়েছে',
     visibilityDefault: 'ডিফল্ট',
@@ -182,18 +185,18 @@ export const TEXT: I18N = {
     selectAll: 'সব নির্বাচন করুন',
     apply: 'প্রয়োগ করুন',
     tagPlaceholder: '{{quantity}}-এ ট্যাগ করুন ...',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     tagConfirm: 'আপনি কি নিশ্চিত যে আপনি {{quantity}}-এ ট্যাগ প্রয়োগ করতে চান? এই ক্রিয়াটি ফিরিয়ে নেওয়া যাবে না।',
     tagSuccess: '{{quantity}} {{tags}} ট্যাগ করা হয়েছে',
     albumPlaceholder: '{{quantity}} অ্যালবামে যোগ করুন ...',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     albumConfirm: 'আপনি কি নিশ্চিত যে আপনি {{quantity}} এই অ্যালবামগুলিতে যোগ করতে চান? এই ক্রিয়াটি ফিরিয়ে নেওয়া যাবে না।',
     albumSuccess: '{{quantity}} {{albums}}-এ যোগ করা হয়েছে',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     favoriteConfirm: 'আপনি কি নিশ্চিত যে আপনি {{quantity}} পছন্দের তালিকায় যোগ করতে চান?',
     favoriteSuccess: '{{quantity}} পছন্দের তালিকায় যোগ করা হয়েছে',
     batchActionFailure: '{{quantity}} আপডেট করতে সমস্যা হয়েছে',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     deletePhotosConfirm: 'আপনি কি নিশ্চিত যে {{quantity}} মুছে ফেলতে চান? এই কাজটি ফেরানো যাবে না।',
     deletePhotosSuccess: '{{quantity}} মুছে ফেলা হয়েছে',
     deletePhotosFailure: '{{quantity}} মুছতে সমস্যা হয়েছে',
@@ -203,7 +206,7 @@ export const TEXT: I18N = {
     setupIncomplete: 'সেটআপ সম্পূর্ণ করুন',
     setupSignIn: 'ছবি আপলোড করতে সাইন ইন করুন',
     setupFirstPhoto: 'আপনার প্রথম ছবি যোগ করুন',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     setupConfig: 'পরিবেশ ভেরিয়েবল সম্পাদনা করে সাইটের নাম এবং অন্যান্য কনফিগারেশন পরিবর্তন করুন',
   },
   utility: {
@@ -218,5 +221,6 @@ export const TEXT: I18N = {
     copyPhrase: '{{label}} কপি হয়েছে',
     paginate: '{{index}} / {{count}}',
     paginateAction: '{{action}} - {{index}} / {{count}}',
+    madeWith: 'তৈরি হয়েছে',
   },
 };

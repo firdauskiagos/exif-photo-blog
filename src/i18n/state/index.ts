@@ -1,3 +1,4 @@
+import { TEMPLATE_REPO_NAME } from '@/app/config';
 import { I18N } from '..';
 
 export type AppTextState = ReturnType<typeof generateAppTextState>;
@@ -35,10 +36,10 @@ export const generateAppTextState = (i18n: I18N) => {
       found: (quantity: string) =>
         i18n.cmdk.found.replace('{{quantity}}', quantity),
     },
-    about: {
-      ...i18n.about,
+    library: {
+      ...i18n.library,
       updated: (distance: string) =>
-        i18n.about.updated.replace('{{distance}}', distance),
+        i18n.library.updated.replace('{{distance}}', distance),
     },
     admin: {
       ...i18n.admin,
@@ -96,6 +97,7 @@ export const generateAppTextState = (i18n: I18N) => {
           .replace('{{index}}', index.toString())
           .replace('{{count}}', count.toString())
           .replace('{{action}}', action),
+      madeWithExifPhotoBlog: `${i18n.utility.madeWith} ${TEMPLATE_REPO_NAME}`,
     },
   };
 };

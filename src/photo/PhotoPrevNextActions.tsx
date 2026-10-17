@@ -40,13 +40,13 @@ export default function PhotoPrevNextActions({
   photo,
   photos = [],
   className,
-  hasAiTextGeneration,
+  hasAiContentGeneration,
   ...categories
 }: {
   photo?: Photo
   photos?: Photo[]
   className?: string
-  hasAiTextGeneration: boolean
+  hasAiContentGeneration: boolean
 } & PhotoSetCategory) {
   const { setNextPhotoAnimation, isUserSignedIn } = useAppState();
 
@@ -124,14 +124,12 @@ export default function PhotoPrevNextActions({
       switch (e.key.toUpperCase()) {
       // Public commands
         case KEY_COMMANDS.prev[0]:
-        case KEY_COMMANDS.prev[1]:
           if (pathPrevious) {
             setNextPhotoAnimation?.(ANIMATION_RIGHT);
             refPrevious.current?.click();
           }
           break;
         case KEY_COMMANDS.next[0]:
-        case KEY_COMMANDS.next[1]:
           if (pathNext) {
             setNextPhotoAnimation?.(ANIMATION_LEFT);
             refNext.current?.click();
@@ -166,7 +164,7 @@ export default function PhotoPrevNextActions({
           if (
             isUserSignedIn &&
             photo &&
-            window.confirm(syncPhotoConfirmText(photo, hasAiTextGeneration))
+            window.confirm(syncPhotoConfirmText(photo, hasAiContentGeneration))
           ) {
             syncPhoto();
           }
@@ -186,7 +184,7 @@ export default function PhotoPrevNextActions({
     downloadFileName,
     syncPhoto,
     deletePhoto,
-    hasAiTextGeneration,
+    hasAiContentGeneration,
   ]);
   useKeydownHandler({ onKeyDown });
 

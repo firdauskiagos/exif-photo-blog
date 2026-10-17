@@ -146,11 +146,12 @@ html {
   @apply
     text-amber-700 dark:text-amber-500
 }
-/* Rules */
+/* Linework: Text */
 @utility border-text {
   @apply
     border-gray-900 dark:border-gray-100
 }
+/* Linework: Main */
 @utility border-main {
   @apply
     border-gray-200 dark:border-gray-700
@@ -159,18 +160,20 @@ html {
   @apply
     divide-gray-400/25 dark:divide-gray-700
 }
+/* Linework: Medium */
 @utility border-medium {
   @apply
-    border-gray-400/25 dark:border-gray-800
+    border-gray-400/25 dark:border-gray-800/70
 }
 @utility outline-medium {
   @apply
-    outline outline-gray-400/25 dark:outline-gray-800
+    outline-gray-400/25 dark:outline-gray-800/70
 }
 @utility divide-medium {
   @apply
-    divide-gray-400/25 dark:divide-gray-800
+    divide-gray-400/25 dark:divide-gray-800/70
 }
+/* Linework: Dim */
 @utility border-dim {
   @apply
     border-gray-400 dark:border-gray-500
@@ -192,10 +195,9 @@ html {
   @apply
     bg-gray-50 dark:bg-gray-900/60
 }
-@utility bg-content {
+@utility bg-extra-extra-dim {
   @apply
-    /* '!' necessary for radix controls */
-    bg-main outline-medium!
+    bg-gray-50/75 dark:bg-gray-950/75
 }
 @utility bg-invert {
   @apply
@@ -256,7 +258,7 @@ html {
       px-2.5 py-2
       border rounded-lg
       bg-main
-      border-gray-200 dark:border-gray-700
+      border-gray-200 dark:border-gray-800
       font-mono text-base leading-tight
       placeholder:text-extra-dim
   }
@@ -306,10 +308,6 @@ html {
       rounded-md
       dark:bg-transparent
   }
-  .error {
-    @apply
-      outline-2 outline-red-500! dark:outline-red-400!
-  }
   button, .button {
     @apply
       cursor-pointer
@@ -319,11 +317,11 @@ html {
       text-base
       shadow-xs
       active:bg-gray-100 dark:active:bg-gray-900
-      hover:border-gray-300 dark:hover:border-gray-600
+      hover:border-gray-300 dark:hover:border-gray-700
       disabled:cursor-not-allowed
       disabled:text-dim
-      disabled:bg-gray-100 dark:disabled:bg-gray-900
-      disabled:border-gray-200 disabled:dark:border-gray-700
+      disabled:bg-gray-100 dark:disabled:bg-gray-900/75
+      disabled:border-gray-200 disabled:dark:border-gray-800
   }
   button.subtle, .button.subtle {
     @apply
@@ -334,12 +332,19 @@ html {
   button.primary, .button.primary {
     @apply
       text-white dark:text-black
+      hover:text-white dark:hover:text-black
+      active:text-white dark:active:text-black
       bg-gray-900 dark:bg-gray-100
       disabled:text-dim
       disabled:bg-gray-100 dark:disabled:bg-gray-900
       disabled:border-gray-200 disabled:dark:border-gray-700
       border-gray-900 dark:border-gray-100
       hover:border-gray-900 dark:hover:border-gray-100
+      /* Keep the disabled colors on hover. Dark hover otherwise
+         paints black type on gray-900. */
+      disabled:hover:text-dim
+      disabled:hover:bg-gray-100 dark:disabled:hover:bg-gray-900
+      disabled:hover:border-gray-200 dark:disabled:hover:border-gray-700
       active:bg-gray-700 active:border-gray-700
       active:dark:bg-gray-300 active:dark:border-gray-300
       shadow-none
@@ -358,12 +363,39 @@ html {
       hover:text-medium
       active:text-dim
   }
+  button.error, .button.error {
+    @apply
+    text-red-500 dark:text-red-600
+    disabled:text-red-500/60 dark:disabled:text-red-500/60
+    active:bg-red-100/50 dark:active:bg-red-950/50
+    disabled:bg-red-100/50 dark:disabled:bg-red-950/50
+    border-red-200 hover:border-red-300
+    dark:border-red-950 dark:hover:border-red-900
+    disabled:border-red-200 dark:disabled:border-red-950
+    disabled:hover:border-red-200 dark:disabled:hover:border-red-950
+  }
+}
+
+@utility folder-peek-rest {
+  transform: translate(-50%, -50%) translateZ(1px) scale(0.9);
+}
+@utility folder-peek-open {
+  transform: translate(
+    calc(-50% + var(--peek-x)),
+    calc(-50% + var(--peek-y))
+  ) translateZ(1px) rotate(var(--peek-rotate)) scale(1);
+}
+@utility folder-peek-active {
+  transform: translate(
+    calc(-50% + var(--peek-x) * 0.8),
+    calc(-50% + var(--peek-y) * 0.8)
+  ) translateZ(1px) rotate(calc(var(--peek-rotate) * 0.8)) scale(0.98);
 }
 
 @layer components {
   .component-surface {
     @apply
-      text-main bg-content rounded-xl
+      text-main bg-main outline! outline-medium! rounded-xl
   }
   .component-surface-light {
     @apply
@@ -373,7 +405,16 @@ html {
     @apply
       text-light bg-black rounded-xl
   }
+  /* Used in surfaces ••• menus */
   .component-surface-frosted {
+    @apply
+      text-main
+      outline! outline-medium! /* '!' necessary for radix controls */
+      bg-white/90 dark:bg-black/80 backdrop-blur-sm
+      rounded-xl
+  }
+  /* Used in prominent overlays like recipes */
+  .component-surface-frosted-light {
     @apply
       text-black bg-neutral-200/95 rounded-xl
   }

@@ -19,7 +19,7 @@ import Image from 'next/image';
 
 const BUTTON_COLOR_CLASSNAMES = clsx(
   'border-gray-200 bg-gray-50 active:bg-gray-100',
-  // eslint-disable-next-line max-len
+  // eslint-disable-next-line @stylistic/max-len
   'dark:border-gray-800 dark:bg-gray-900/75 dark:hover:bg-gray-800/75 dark:active:bg-gray-900',
 );
 
@@ -99,11 +99,11 @@ export default function ShareModal({
         ) : (
           <div className="flex flex-col items-center gap-4 p-4">
             <div className={clsx(
-              'p-3 bg-white rounded-2xl shadow-lg outline-medium',
+              'p-3 bg-white rounded-2xl shadow-lg outline outline-medium',
               'flex items-center justify-center',
             )}>
               <Image
-                /* eslint-disable-next-line max-len */
+                /* eslint-disable-next-line @stylistic/max-len */
                 src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(pathShare)}`}
                 alt="QR Code"
                 className="rounded-xl bg-white"

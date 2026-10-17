@@ -1,3 +1,4 @@
+/* eslint-disable @stylistic/max-len */
 import { Photo } from '@/photo';
 import { PhotoSetCategory } from '@/category';
 import { getBaseUrl, GRID_HOMEPAGE_ENABLED } from './config';
@@ -11,7 +12,7 @@ import { AlbumOrAlbumSlug } from '@/album';
 export const PATH_ROOT                  = '/';
 export const PATH_GRID                  = '/grid';
 export const PATH_FULL                  = '/full';
-export const PATH_ABOUT                 = '/about';
+export const PATH_LIBRARY               = '/library';
 export const PATH_ADMIN                 = '/admin';
 export const PATH_API                   = '/api';
 export const PATH_SIGN_IN               = '/sign-in';
@@ -75,16 +76,18 @@ export const PATH_ADMIN_PHOTOS          = `${PATH_ADMIN}/photos`;
 export const PATH_ADMIN_PHOTOS_UPDATES  = `${PATH_ADMIN_PHOTOS}/updates`;
 export const PATH_ADMIN_UPLOADS         = `${PATH_ADMIN}/uploads`;
 export const PATH_ADMIN_ALBUMS          = `${PATH_ADMIN}/albums`;
+export const PATH_ADMIN_ALBUM_NEW       = `${PATH_ADMIN_ALBUMS}/new`;
 export const PATH_ADMIN_TAGS            = `${PATH_ADMIN}/tags`;
 export const PATH_ADMIN_RECIPES         = `${PATH_ADMIN}/recipes`;
 export const PATH_ADMIN_CONFIGURATION   = `${PATH_ADMIN}/configuration`;
 export const PATH_ADMIN_INSIGHTS        = `${PATH_ADMIN}/insights`;
-export const PATH_ADMIN_ABOUT_EDIT      = `${PATH_ABOUT}/${EDIT}`;
+export const PATH_ADMIN_LIBRARY_EDIT    = `${PATH_LIBRARY}/${EDIT}`;
 export const PATH_ADMIN_BASELINE        = `${PATH_ADMIN}/baseline`;
 export const PATH_ADMIN_COMPONENTS      = `${PATH_ADMIN}/components`;
 export const PATH_ADMIN_AI_MODELS       = `${PATH_ADMIN}/ai-models`;
 
 // Debug paths
+export const PATH_DEBUG_CONFIGURATION   = `${PATH_ADMIN_CONFIGURATION}/export.json`;
 export const PATH_OG_ALL                = `${PATH_OG}/all`;
 export const PATH_OG_SAMPLE             = `${PATH_OG}/sample`;
 
@@ -112,7 +115,7 @@ export const PATHS_ADMIN = [
   PATH_ADMIN_RECIPES,
   PATH_ADMIN_INSIGHTS,
   PATH_ADMIN_CONFIGURATION,
-  PATH_ADMIN_ABOUT_EDIT,
+  PATH_ADMIN_LIBRARY_EDIT,
   PATH_ADMIN_BASELINE,
   PATH_ADMIN_COMPONENTS,
   PATH_ADMIN_AI_MODELS,
@@ -122,7 +125,7 @@ export const PATHS_TO_CACHE = [
   PATH_ROOT,
   PATH_GRID,
   PATH_FULL,
-  PATH_ABOUT,
+  PATH_LIBRARY,
   PATH_OG,
   PATH_PHOTO_DYNAMIC,
   PATH_CAMERA_DYNAMIC,
@@ -152,7 +155,6 @@ const getAlbumSlug = (albumOrAlbumSlug: AlbumOrAlbumSlug) =>
     : albumOrAlbumSlug.slug;
 
 export const pathForAdminUploadUrl = (url: string, title?: string) =>
-  // eslint-disable-next-line max-len
   `${PATH_ADMIN_UPLOADS}/${encodeURIComponent(url)}${title ? `?${PARAM_UPLOAD_TITLE}=${encodeURIComponent(title)}` : ''}`;
 
 export const pathForAdminPhotoEdit = (photo: PhotoOrPhotoId) =>
@@ -461,8 +463,8 @@ export const isPathGrid = (pathname?: string) =>
 export const isPathFull = (pathname?: string) =>
   checkPathPrefix(pathname, PATH_FULL);
 
-export const isPathAbout = (pathname?: string) =>
-  checkPathPrefix(pathname, PATH_ABOUT);
+export const isPathLibrary = (pathname?: string) =>
+  checkPathPrefix(pathname, PATH_LIBRARY);
 
 // Category paths which render a photo set, i.e. offer grid/full views
 export const isPathPhotoSet = (pathname?: string) =>
@@ -485,7 +487,7 @@ export const isPathHome = (pathname?: string) =>
 
 export const isPathTopLevel = (pathname?: string) =>
   isPathHome(pathname) ||
-  isPathAbout(pathname);
+  isPathLibrary(pathname);
 
 export const isPathSignIn = (pathname?: string) =>
   checkPathPrefix(pathname, PATH_SIGN_IN);
@@ -498,6 +500,9 @@ export const isPathTopLevelAdmin = (pathname?: string) =>
 
 export const isPathAdminPhotos = (pathname?: string) =>
   checkPathPrefix(pathname, PATH_ADMIN_PHOTOS);
+
+export const isPathAdminPhotoEdit = (pathname = '') =>
+  new RegExp(`^${PATH_ADMIN_PHOTOS}/[^/]+/${EDIT}/?$`).test(pathname);
 
 export const isPathAdminInsights = (pathname?: string) =>
   checkPathPrefix(pathname, PATH_ADMIN_INSIGHTS);
@@ -512,7 +517,7 @@ export const isPathAdminInfo = (pathname?: string) =>
 export const isPathProtected = (pathname?: string) =>
   checkPathPrefix(pathname, PATH_ADMIN) ||
   checkPathPrefix(pathname, pathForTag(TAG_PRIVATE)) ||
-  checkPathPrefix(pathname, PATH_ADMIN_ABOUT_EDIT) ||
+  checkPathPrefix(pathname, PATH_ADMIN_LIBRARY_EDIT) ||
   checkPathPrefix(pathname, PATH_OG);
 
 export const getPathComponents = (

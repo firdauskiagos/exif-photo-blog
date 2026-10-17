@@ -35,13 +35,14 @@ export default function PhotoGridInfinite({
       excludeFromFeeds={excludeFromFeeds}
       {...categories}
     >
-      {({ key, photos, onLastPhotoVisible }) =>
+      {({ key, photos, onLastPhotoVisible, revalidatePhoto }) =>
         <PhotoGrid key={key} {...{
           photos,
           ...categories,
           canStart,
           onLastPhotoVisible,
           animateOnFirstLoadOnly,
+          revalidatePhoto,
         }} />}
     </InfinitePhotoScroll>
   );

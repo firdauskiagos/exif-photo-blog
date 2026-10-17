@@ -8,14 +8,13 @@ import AppToolbar from '@/app/AppToolbar';
 import {
   PATH_ROOT,
   isPathAdmin,
+  isPathAdminPhotoEdit,
   isPathSignIn,
 } from '@/app/path';
 import AnimateItems from '../components/AnimateItems';
-import {
-  NAV_CAPTION,
-} from './config';
+import { NAV_CAPTION } from './config';
 import { useRef } from 'react';
-import useStickyNav from './useStickyNav';
+import useStickyHeader from './useStickyHeader';
 import { useAppState } from '@/app/AppState';
 
 const NAV_HEIGHT_CLASS = NAV_CAPTION
@@ -31,7 +30,7 @@ export default function NavClient({
   navCaption?: string
   isInEmptyState: boolean
 }) {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   const pathname = usePathname();
   const showNav = !isPathSignIn(pathname);
@@ -41,10 +40,12 @@ export default function NavClient({
   } = useAppState();
 
   const {
-    classNameStickyContainer,
-    classNameStickyNav,
-    isNavVisible,
-  } = useStickyNav(ref, !isPathAdmin(pathname));
+    containerClassName,
+    containerStyle,
+    contentClassName,
+    contentStyle,
+    isVisible,
+  } = useStickyHeader(ref, !isPathAdminPhotoEdit(pathname));
 
   const renderLink = (
     text: string,
@@ -56,8 +57,13 @@ export default function NavClient({
 
   return (
     <AppGrid
-      className={classNameStickyContainer}
-      classNameMain='pointer-events-auto'
+      containerRef={ref}
+      className={containerClassName}
+      style={containerStyle}
+      classNameMain={clsx(
+        // Stationary column would cover banners after the nav slides away
+        'pointer-events-none!',
+      )}
       contentMain={
         <AnimateItems
           animateOnFirstLoadOnly
@@ -66,17 +72,17 @@ export default function NavClient({
           items={showNav
             ? [<nav
               key="nav"
-              ref={ref}
               className={clsx(
                 'w-full flex items-center gap-1.5 sm:gap-2 bg-main',
                 NAV_HEIGHT_CLASS,
                 // Enlarge nav to ensure it fully masks underlying content
                 'md:w-[calc(100%+8px)] md:translate-x-[-4px] md:px-[4px]',
-                classNameStickyNav,
-              )}>
+                contentClassName,
+              )}
+              style={contentStyle}>
               <AppToolbar
-                animate={hasLoadedWithAnimations && isNavVisible}
-                hideSortControl={isInEmptyState}
+                animate={hasLoadedWithAnimations && isVisible}
+                isInEmptyState={isInEmptyState}
               />
               <div className={clsx(
                 'grow text-right min-w-0',

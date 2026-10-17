@@ -4,12 +4,14 @@ https://github.com/sambecker/exif-photo-blog/assets/169298/4253ea54-558a-4358-88
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/sambecker-pro/clone?demo-description=Store%20photos%20with%20original%20camera%20data&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F39rys245Px3FVBGRJNYEON%2Fbf68d5c052bda9e9e5bec21878764bc3%2Fimage.png&demo-title=Photo%20Blog&demo-url=https%3A%2F%2Fphotos.sambecker.com&from=templates&project-name=Photo%20Blog&repository-name=exif-photo-blog&repository-url=https%3A%2F%2Fgithub.com%2Fsambecker%2Fexif-photo-blog&skippable-integrations=1&stores=%5B%7B%22type%22%3A%22postgres%22%7D%2C%7B%22type%22%3A%22blob%22%7D%5D&teamCreateStatus=hidden)
 
-🎬&nbsp;&nbsp;Hosted examples
+🎬&nbsp;&nbsp;Example sites
 -
 - [photos.sambecker.com](https://photos.sambecker.com)
 - [birdnerd.photo](https://birdnerd.photo)
 - [booshie.photo](https://booshie.photo)
 - [photos.sconetto.me](https://photos.sconetto.me)
+- [photos.dteles.dev](https://photos.dteles.dev)
+- [jahidshots.com](https://jahidshots.com)
 
 _Submit your site as an example by [opening an issue](https://github.com/sambecker/exif-photo-blog/issues/new?template=example_site_submission.md)_
 
@@ -103,9 +105,9 @@ See FAQ for [limitations of local development](#can-i-work-locally-without-acces
 - `NEXT_PUBLIC_IMAGE_QUALITY = 1-100` controls the quality of large photos
 - `NEXT_PUBLIC_DISABLE_BLUR = 1` prevents image blur data being stored and displayed (potentially useful for limiting Postgres usage)
 
-### AI text generation
+### AI content generation
 
-To auto-generate text descriptions of photos, configure a provider. Vercel AI Gateway is the recommended path; direct OpenAI (or an OpenAI-compatible endpoint) is available as an alternate. If both variables are set, `OPENAI_SECRET_KEY` takes precedence.
+To enable AI-powered color analysis and text descriptions of photos, configure a provider. Vercel AI Gateway is the recommended path; direct OpenAI (or an OpenAI-compatible endpoint) is available as an alternate. If both variables are set, `OPENAI_SECRET_KEY` takes precedence.
 
 #### Vercel AI Gateway
 
@@ -138,19 +140,18 @@ To auto-generate text descriptions of photos, configure a provider. Vercel AI Ga
 
 ### Location
 
-- To add location meta to entities like photos and albums:
+To add location meta to entities like photos and albums:
 
-  1. Setup Google Places/Geocoding API
-      - [Create Google Cloud project](https://console.cloud.google.com/projectcreate) if necessary
-      - Enable "Places API (new)" (for finding places of interest)
-      - Enable "Geocoding API" (for reverse lookup based on lat/long coordinates)
-      - Select [Create credentials](https://console.cloud.google.com/apis/credentials) and choose "API key"
-      - Choose "Restrict key" and select "Places API (new)" + "Geocoding API"
-  2. Store API key in `GOOGLE_PLACES_GEOCODING_API_KEY`
-  3. Add [rate limiting](#rate-limiting) (_recommended_)
+1. Setup Google Places/Geocoding API
+   - [Create Google Cloud project](https://console.cloud.google.com/projectcreate) if necessary
+   - Enable "Places API (new)" (for finding places of interest)
+   - Enable "Geocoding API" (for reverse lookup based on lat/long coordinates)
+   - Select [Create credentials](https://console.cloud.google.com/apis/credentials) and choose "API key"
+   - Choose "Restrict key" and select "Places API (new)" + "Geocoding API"
+2. Store API key in `GOOGLE_PLACES_GEOCODING_API_KEY`
+3. Add [rate limiting](#rate-limiting) (_recommended_)
 
 - `NEXT_PUBLIC_GEO_PRIVACY = 1` disables collection/display of location-based data (⚠️ re-compresses uploaded images in order to remove GPS information)
-
 - `DISABLE_AUTO_GENERATE_LOCATIONS = 1` to disables auto-generation of location data
 
 ### Rate limiting
@@ -196,13 +197,12 @@ Create Upstash Redis store from storage tab of Vercel dashboard and link to your
 
 
 ### Display
-- `NEXT_PUBLIC_HIDE_ABOUT_PAGE = 1` hides `/about` page
 - `NEXT_PUBLIC_HIDE_KEYBOARD_SHORTCUT_TOOLTIPS = 1` hides keyboard shortcut hints in areas like the main nav, and previous/next photo links
 - `NEXT_PUBLIC_HIDE_EXIF_DATA = 1` hides EXIF data in photo details and OG images (potentially useful for portfolios, which don't focus on photography)
 - `NEXT_PUBLIC_ALWAYS_SHOW_EXPOSURE_COMP = 1` displays exposure compensation even when it's 0ev
 - `NEXT_PUBLIC_HIDE_ZOOM_CONTROLS = 1` hides fullscreen photo zoom controls
 - `NEXT_PUBLIC_HIDE_TAKEN_AT_TIME = 1` hides taken at time from photo meta
-- `NEXT_PUBLIC_HIDE_REPO_LINK = 1` removes footer link to repo
+- `NEXT_PUBLIC_HIDE_TEMPLATE_ATTRIBUTION = 1` hides "made with exif-photo-blog" references
 
 ### Grid
 - `NEXT_PUBLIC_GRID_HOMEPAGE = 1` shows grid layout on homepage
@@ -214,6 +214,9 @@ Create Upstash Redis store from storage tab of Vercel dashboard and link to your
 - `NEXT_PUBLIC_DEFAULT_THEME = light | dark` sets preferred initial theme (defaults to `system` when not configured)
 - `NEXT_PUBLIC_DISABLE_UPPERCASE_TITLES = 1` prevents photo titles and captions displaying in uppercase
 - `NEXT_PUBLIC_MATTE_PHOTOS = 1` constrains the size of each photo, and displays a surrounding border, potentially useful for photos with tall aspect ratios (colors can be customized via `NEXT_PUBLIC_MATTE_COLOR` + `NEXT_PUBLIC_MATTE_COLOR_DARK`)
+- `NEXT_PUBLIC_TINT_FOLDERS = 1` shows tinted folders on /library page
+- `NEXT_PUBLIC_HIGH_DENSITY_PREVIEWS = 1` shows up to 6 photos in category image hovers and OG images (max defaults to 5)
+- `NEXT_PUBLIC_OG_TEXT_ALIGNMENT = BOTTOM` keeps OG image text bottom aligned (default is top)
 
 ### Settings
 - `NEXT_PUBLIC_ALLOW_PUBLIC_DOWNLOADS = 1` enables public photo downloads for all visitors (⚠️ may result in increased bandwidth usage)
@@ -228,17 +231,16 @@ Create Upstash Redis store from storage tab of Vercel dashboard and link to your
     - `all`
     - `none`
 - `NEXT_PUBLIC_SITE_FEEDS = 1` enables feeds at `/feed.json` and `/rss.xml`
-- `NEXT_PUBLIC_OG_TEXT_ALIGNMENT = BOTTOM` keeps OG image text bottom aligned (default is top)
 
 ### Scripts & Analytics
 - Web Analytics
-  1. Open project on Vercel
-  2. Click "Analytics" tab
-  3. Follow "Enable Web Analytics" instructions (`@vercel/analytics` already included)
+1. Open project on Vercel
+2. Click "Analytics" tab
+3. Follow "Enable Web Analytics" instructions (`@vercel/analytics` already included)
 - Speed Insights
-  1. Open project on Vercel
-  2. Click "Speed Insights" tab
-  3. Follow "Enable Speed Insights" instructions (`@vercel/speed-insights` already included)
+1. Open project on Vercel
+2. Click "Speed Insights" tab
+3. Follow "Enable Speed Insights" instructions (`@vercel/speed-insights` already included)
 - `PAGE_SCRIPT_URLS`
   - comma-separated list of URLs to be added to the bottom of the body tag via "next/script"
   - urls must begin with 'https'
@@ -341,7 +343,7 @@ Only one storage adapter—Vercel Blob, Cloudflare R2, AWS S3, or MinIO—can be
 
 MinIO is a self-hosted S3-compatible object storage server.
 
-### 1. Server/bucket setup
+#### 1. Server/bucket setup
 
 First, install and deploy the MinIO server, then create a bucket with public read access.
 
@@ -383,7 +385,7 @@ First, install and deploy the MinIO server, then create a bucket with public rea
     - `NEXT_PUBLIC_MINIO_PORT`: (optional)
     - `NEXT_PUBLIC_MINIO_DISABLE_SSL`: Set to `1` to disable SSL (defaults to HTTPS)
 
-### 2. Create user with restricted permissions
+#### 2. Create user with restricted permissions
 
 Create a dedicated user and a policy that grants permission to manage objects within your `BUCKET_NAME`.
 

@@ -50,7 +50,7 @@ export const TEXT: I18N = {
     full: 'Lengkap',
     grid: 'Grid',
     viewOptions: 'Opsi tampilan',
-    about: 'Tentang',
+    library: 'Pustaka',
     admin: 'Admin',
     search: 'Cari',
     prev: 'Sebelumnya',
@@ -58,7 +58,7 @@ export const TEXT: I18N = {
     next: 'Berikutnya',
     nextShort: 'Brkt',
   },
-  about: {
+  library: {
     titleDefault: 'Tentang situs ini',
     updated: 'Diperbarui {{distance}} yang lalu',
     photoCount: 'Jumlah foto',
@@ -70,9 +70,6 @@ export const TEXT: I18N = {
     recentAlbum: 'Album terbaru',
     popularTag: 'Tag populer',
     popularPlace: 'Tempat populer',
-  },
-  footer: {
-    madeWith: 'Dibuat dengan',
   },
   sort: {
     sort: 'Urutkan',
@@ -107,6 +104,7 @@ export const TEXT: I18N = {
     recipeCopy: 'Salin Teks Resep',
     download: 'Unduh File Asli',
     sharePhoto: 'Bagikan Foto',
+    sharePhotos: 'Bagikan Foto',
     shareCopy: 'Salin Tautan',
     shareTo: 'Bagikan ...',
     shareX: 'Bagikan di X',
@@ -145,8 +143,11 @@ export const TEXT: I18N = {
     selectPhotosExit: 'Berhenti Memilih',
     editTitles: 'Edit Judul ...',
     editTitlesExit: 'Berhenti Mengedit Judul',
+    app: 'Pengaturan Aplikasi',
     appInsights: 'Wawasan Aplikasi',
+    appInsightsShort: 'Wawasan',
     appConfig: 'Konfigurasi Aplikasi',
+    appConfigShort: 'Konfigurasi',
     clearCache: 'Bersihkan Cache',
     clearCacheSuccess: 'Cache situs telah dibersihkan',
     edit: 'Edit',
@@ -157,15 +158,17 @@ export const TEXT: I18N = {
     download: 'Unduh',
     sync: 'Sinkronkan',
     syncAutomatic: 'Otomatis',
+    syncUpdateColor: 'Perbarui warna',
+    syncUpdateColorSuccess: 'Warna diperbarui:',
     syncOverwrite: 'Timpa',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     syncOverwriteConfirm: 'Apakah Anda yakin ingin menimpa semua bidang foto? Data yang disesuaikan mungkin hilang.',
     reupload: 'Unggah ulang',
     delete: 'Hapus',
     deleteConfirm: 'Apakah Anda yakin ingin menghapus "{{photoTitle}}"?',
     setVisibility: 'Visibilitas',
     setVisibilityPlaceholder: 'Atur visibilitas untuk {{quantity}} ...',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     setVisibilityConfirm: 'Apakah Anda yakin ingin mengatur visibilitas ke "{{visibility}}" untuk {{quantity}}?',
     setVisibilitySuccess: 'Visibilitas diperbarui untuk {{quantity}}',
     visibilityDefault: 'Default',
@@ -182,17 +185,17 @@ export const TEXT: I18N = {
     selectAll: 'Pilih Semua',
     apply: 'Terapkan',
     tagPlaceholder: 'Tandai {{quantity}} ...',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     tagConfirm: 'Apakah Anda yakin ingin menerapkan tag ke {{quantity}}? Tindakan ini tidak dapat dibatalkan.',
     tagSuccess: '{{quantity}} ditandai {{tags}}',
     albumPlaceholder: 'Tambahkan {{quantity}} ke album ...',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     albumConfirm: 'Apakah Anda yakin ingin menambahkan {{quantity}} ke album ini? Tindakan ini tidak dapat dibatalkan.',
     albumSuccess: '{{quantity}} ditambahkan ke {{albums}}',
     favoriteConfirm: 'Apakah Anda yakin ingin menyukai {{quantity}}?',
     favoriteSuccess: '{{quantity}} disukai',
     batchActionFailure: 'Terjadi kesalahan saat memperbarui {{quantity}}',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     deletePhotosConfirm: 'Apakah Anda yakin ingin menghapus {{quantity}}? Tindakan ini tidak dapat dibatalkan.',
     deletePhotosSuccess: '{{quantity}} dihapus',
     deletePhotosFailure: 'Terjadi kesalahan saat menghapus {{quantity}}',
@@ -216,5 +219,6 @@ export const TEXT: I18N = {
     copyPhrase: '{{label}} disalin',
     paginate: '{{index}} dari {{count}}',
     paginateAction: '{{action}} {{index}} dari {{count}}',
+    madeWith: 'Dibuat dengan',
   },
 };

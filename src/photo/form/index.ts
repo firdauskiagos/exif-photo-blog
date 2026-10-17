@@ -14,7 +14,13 @@ import { FujifilmRecipe } from '@/platforms/fujifilm/recipe';
 import { ReactNode } from 'react';
 import { FujifilmSimulation } from '@/platforms/fujifilm/simulation';
 import { SelectMenuOptionType } from '@/components/SelectMenuOption';
-import { COLOR_SORT_ENABLED } from '@/app/config';
+import {
+  applyAiColorToColorData,
+  convertJsonStringToOklch,
+  convertOklchToJsonString,
+  generateColorDataFromString,
+} from '@/photo/color/client';
+import { calculateColorSort } from '@/photo/color/sort';
 
 type VirtualFields =
   'albums' |
@@ -23,11 +29,12 @@ type VirtualFields =
   'applyRecipeTitleGlobally' |
   'shouldStripGpsData' |
   'locationPlace' |
-  'locationDisplayName';
+  'locationDisplayName' |
+  'keyColor';
 
 export type FormFields = keyof PhotoDbInsert | VirtualFields;
 
-export type PhotoFormData = Record<FormFields, string>
+export type PhotoFormData = Record<FormFields, string>;
 
 export type FieldSetType =
   'text' |
@@ -71,6 +78,7 @@ export type FormMeta = {
   tagOptionsLimit?: number
   tagOptionsLimitValidationMessage?: string
   tagOptionsShouldParameterize?: boolean
+  tagOptionsShouldRevealRawText?: boolean
   isJson?: boolean
   staticValue?: string
 };
@@ -78,11 +86,33 @@ export type FormMeta = {
 const STRING_MAX_LENGTH_SHORT = 255;
 const STRING_MAX_LENGTH_LONG  = 1000;
 
+// Omit options entirely (an empty array still renders the dropdown)
+const tagOptionsForAutocomplete = (
+  options?: AnnotatedTag[],
+): Pick<
+  FormMeta,
+  'tagOptions' |
+  'tagOptionsLimit' |
+  'tagOptionsShouldParameterize' |
+  'tagOptionsShouldRevealRawText'
+> => options && options.length > 0
+  ? {
+    tagOptions: options,
+    tagOptionsLimit: 1,
+    tagOptionsShouldParameterize: false,
+    tagOptionsShouldRevealRawText: true,
+  }
+  : {};
+
 const FORM_METADATA = (
   tagOptions?: AnnotatedTag[],
   recipeOptions?: AnnotatedTag[],
   filmOptions?: AnnotatedTag[],
-  aiTextGeneration?: boolean,
+  cameraMakeOptions?: AnnotatedTag[],
+  cameraModelOptions?: AnnotatedTag[],
+  lensMakeOptions?: AnnotatedTag[],
+  lensModelOptions?: AnnotatedTag[],
+  hasAiContentGeneration?: boolean,
   shouldStripGpsData?: boolean,
   hasLocationServices?: boolean,
 ): Record<keyof PhotoFormData, FormMeta> => ({
@@ -110,11 +140,19 @@ const FORM_METADATA = (
     label: 'semantic description (not visible)',
     capitalize: true,
     validateStringMaxLength: STRING_MAX_LENGTH_LONG,
-    shouldHide: () => !aiTextGeneration,
+    shouldHide: () => !hasAiContentGeneration,
+  },
+  keyColor: {
+    section: 'text',
+    label: 'key color',
+    excludeFromInsert: true,
+    shouldHide: () => !hasAiContentGeneration,
+    validate: value => value && !convertJsonStringToOklch(value)
+      ? 'Invalid color'
+      : undefined,
   },
   visibility: {
     section: 'text',
-    type: 'text',
     label: 'visibility',
     excludeFromInsert: true,
   },
@@ -142,10 +180,12 @@ const FORM_METADATA = (
   make: {
     section: 'exif',
     label: 'camera make',
+    ...tagOptionsForAutocomplete(cameraMakeOptions),
   },
   model: {
     section: 'exif',
     label: 'camera model',
+    ...tagOptionsForAutocomplete(cameraModelOptions),
   },
   film: {
     section: 'exif',
@@ -206,8 +246,16 @@ const FORM_METADATA = (
     section: 'exif',
     label: 'focal length 35mm-equivalent',
   },
-  lensMake: { section: 'exif', label: 'lens make' },
-  lensModel: { section: 'exif', label: 'lens model' },
+  lensMake: {
+    section: 'exif',
+    label: 'lens make',
+    ...tagOptionsForAutocomplete(lensMakeOptions),
+  },
+  lensModel: {
+    section: 'exif',
+    label: 'lens model',
+    ...tagOptionsForAutocomplete(lensModelOptions),
+  },
   fNumber: { section: 'exif', label: 'aperture' },
   iso: { section: 'exif', label: 'ISO' },
   exposureTime: { section: 'exif', label: 'exposure time' },
@@ -291,21 +339,19 @@ const FORM_METADATA = (
     label: 'aspect ratio',
     readOnly: true,
   },
-  priorityOrder: {
-    section: 'misc',
-    label: 'priority order',
-  },
   colorData: {
     section: 'misc',
     type: 'textarea',
     label: 'color data',
     isJson: true,
-    shouldHide: () => !COLOR_SORT_ENABLED,
   },
   colorSort: {
     section: 'misc',
     label: 'color sort',
-    shouldHide: () => !COLOR_SORT_ENABLED,
+  },
+  priorityOrder: {
+    section: 'misc',
+    label: 'priority order',
   },
   shouldStripGpsData: {
     section: 'misc',
@@ -319,7 +365,45 @@ const FORM_METADATA = (
 export const FIELDS_TO_NOT_TOAST: (keyof PhotoFormData)[] = [
   'colorData',
   'colorSort',
+  'keyColor',
 ];
+
+const applyKeyColorToColorFields = (
+  colorDataString?: string,
+  keyColor?: string,
+) => {
+  const colorData = generateColorDataFromString(colorDataString);
+  if (!colorData) { return; }
+  const ai = keyColor
+    ? convertJsonStringToOklch(keyColor)
+    : undefined;
+  if (keyColor && !ai) { return; }
+  const updated = applyAiColorToColorData(colorData, ai);
+  return {
+    colorData: JSON.stringify(updated),
+    colorSort: `${calculateColorSort(updated)}`,
+  };
+};
+
+export const formDataWithUpdatedKeyColor = (
+  data: Partial<PhotoFormData>,
+  keyColor: string,
+): Partial<PhotoFormData> => ({
+  ...data,
+  keyColor,
+  ...applyKeyColorToColorFields(data.colorData, keyColor),
+});
+
+export const formDataWithUpdatedColorData = (
+  data: Partial<PhotoFormData>,
+  colorData: string,
+): Partial<PhotoFormData> => ({
+  ...data,
+  colorData,
+  keyColor: convertOklchToJsonString(
+    generateColorDataFromString(colorData)?.ai,
+  ),
+});
 
 export const FIELDS_WITH_JSON = Object.entries(FORM_METADATA())
   .filter(([_, meta]) => meta.isJson)
@@ -369,7 +453,7 @@ export const isFormValid = (formData: Partial<PhotoFormData>) =>
     ([key, { required, validate, validateStringMaxLength }]) =>
       (!required || Boolean(formData[key])) &&
       (!validate?.(formData[key])) &&
-      // eslint-disable-next-line max-len
+      // eslint-disable-next-line @stylistic/max-len
       (!validateStringMaxLength || (formData[key]?.length ?? 0) <= validateStringMaxLength),
   );
 
@@ -413,6 +497,7 @@ export const convertPhotoToFormData = (photo: Photo): PhotoFormData => {
     favorite: photo.tags.includes(TAG_FAVS) ? 'true' : 'false',
     locationDisplayName:
       photo.location?.nameFormatted ?? photo.location?.name ?? '',
+    keyColor: convertOklchToJsonString(photo.colorData?.ai),
   } as PhotoFormData);
 };
 
@@ -431,6 +516,8 @@ export const convertFormDataToPhotoDbInsert = (
     tags.push(TAG_FAVS);
   }
   const locationDisplayName = photoForm.locationDisplayName;
+  const keyColor = photoForm.keyColor;
+  const hasKeyColorField = typeof keyColor === 'string' && keyColor.length > 0;
 
   // Parse FormData:
   // - remove server action ID
@@ -449,6 +536,17 @@ export const convertFormDataToPhotoDbInsert = (
       (photoForm as any)[key] = (photoForm as any)[key].trim();
     }
   });
+
+  if (hasKeyColorField) {
+    const colorFields = applyKeyColorToColorFields(
+      photoForm.colorData,
+      keyColor,
+    );
+    if (colorFields) {
+      photoForm.colorData = colorFields.colorData;
+      photoForm.colorSort = colorFields.colorSort;
+    }
+  }
 
   return {
     ...(photoForm as PhotoFormData & {
@@ -471,12 +569,10 @@ export const convertFormDataToPhotoDbInsert = (
     aspectRatio: photoForm.aspectRatio
       ? roundToNumber(parseFloat(photoForm.aspectRatio), 6)
       : DEFAULT_ASPECT_RATIO,
-    focalLength: photoForm.focalLength
-      ? parseInt(photoForm.focalLength)
-      : undefined,
-    focalLengthIn35MmFormat: photoForm.focalLengthIn35MmFormat
-      ? parseInt(photoForm.focalLengthIn35MmFormat)
-      : undefined,
+    // Focal lengths of 0 (or unparseable values) indicate unknown data
+    focalLength: parseInt(photoForm.focalLength ?? '') || undefined,
+    focalLengthIn35MmFormat:
+      parseInt(photoForm.focalLengthIn35MmFormat ?? '') || undefined,
     fNumber: photoForm.fNumber
       ? parseFloat(photoForm.fNumber)
       : undefined,

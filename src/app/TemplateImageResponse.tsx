@@ -3,6 +3,7 @@ import IconFull from '@/components/icons/IconFull';
 import IconGrid from '@/components/icons/IconGrid';
 import ImagePhotoGrid from '../image-response/components/ImagePhotoGrid';
 import { NextImageSize } from '@/platforms/next-image';
+import { MAX_PHOTOS_TO_SHOW_TEMPLATE } from '@/image-response';
 
 export default function TemplateImageResponse({
   photos,
@@ -95,6 +96,7 @@ export default function TemplateImageResponse({
             ? height - 130 - outerMargin * 2
             : height,
           gap: 10,
+          maxPhotos: MAX_PHOTOS_TO_SHOW_TEMPLATE,
         }} />
       </div>
     </div>

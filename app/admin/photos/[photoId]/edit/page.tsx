@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation';
 import {
   getPhotoNoStore,
+  getUniqueCamerasCached,
   getUniqueFilmsCached,
+  getUniqueLensesCached,
   getUniqueRecipesCached,
   getUniqueTagsCached,
 } from '@/photo/cache';
@@ -37,6 +39,8 @@ export default async function PhotoEditPage({
     uniqueTags,
     uniqueRecipes,
     uniqueFilms,
+    uniqueCameras,
+    uniqueLenses,
   ] = await Promise.all([
     getPhotoNoStore(photoId, true),
     getAlbumTitlesForPhotoCached(photoId),
@@ -44,13 +48,15 @@ export default async function PhotoEditPage({
     getUniqueTagsCached(),
     getUniqueRecipesCached(),
     getUniqueFilmsCached(),
+    getUniqueCamerasCached(true),
+    getUniqueLensesCached(true),
   ]);
 
   if (!photo) { redirect(PATH_ADMIN); }
 
   const photoStorageUrls = await getStorageUrlsForPhoto(photo);
 
-  const hasAiTextGeneration = AI_CONTENT_GENERATION_ENABLED;
+  const hasAiContentGeneration = AI_CONTENT_GENERATION_ENABLED;
   
   // Only generate image thumbnails when AI generation is enabled
   const imageThumbnailBase64 = AI_CONTENT_GENERATION_ENABLED
@@ -74,7 +80,9 @@ export default async function PhotoEditPage({
       uniqueTags,
       uniqueRecipes,
       uniqueFilms,
-      hasAiTextGeneration,
+      uniqueCameras,
+      uniqueLenses,
+      hasAiContentGeneration,
       imageThumbnailBase64,
       blurData,
       hasLocationServices: HAS_LOCATION_SERVICES,

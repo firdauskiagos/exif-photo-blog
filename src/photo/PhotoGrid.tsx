@@ -16,6 +16,8 @@ import { GRID_GAP_CLASSNAME } from '@/components';
 import { useSelectPhotosState } from '@/admin/select/SelectPhotosState';
 import { DATA_KEY_PHOTO_GRID } from '@/admin/select/SelectPhotosProvider';
 import PhotoGridMasonry from './PhotoGridMasonry';
+import AdminPhotoMenu from '@/admin/AdminPhotoMenu';
+import { RevalidatePhoto } from './InfinitePhotoScroll';
 
 export default function PhotoGrid({
   photos,
@@ -31,6 +33,7 @@ export default function PhotoGrid({
   selectable = true,
   onLastPhotoVisible,
   onAnimationComplete,
+  revalidatePhoto,
   ...categories
 }: {
   photos: Photo[]
@@ -46,9 +49,11 @@ export default function PhotoGrid({
   selectable?: boolean
   onLastPhotoVisible?: () => void
   onAnimationComplete?: () => void
+  revalidatePhoto?: RevalidatePhoto
 } & PhotoSetCategory) {
   const {
     isGridHighDensity,
+    isUserSignedIn,
   } = useAppState();
 
   const {
@@ -100,6 +105,36 @@ export default function PhotoGrid({
             : undefined,
         }}
       />
+      {isUserSignedIn && !isSelectingPhotos &&
+        <div className={clsx(
+          'absolute top-0 right-0 z-10 p-1',
+          'opacity-0 pointer-events-none',
+          'group-hover:opacity-100',
+          'group-hover:pointer-events-auto',
+          'has-[[data-state=open]]:opacity-100',
+          'has-[[data-state=open]]:pointer-events-auto',
+          'focus-within:opacity-100',
+          'focus-within:pointer-events-auto',
+          'transition-opacity',
+        )}>
+          <AdminPhotoMenu
+            photo={photo}
+            revalidatePhoto={revalidatePhoto}
+            classNameButton={clsx(
+              'text-white!',
+              'bg-black/40!',
+              'hover:bg-black/60!',
+              'active:bg-black/75!',
+              'dark:hover:bg-black/60!',
+              'dark:active:bg-black/75!',
+              'backdrop-blur-xs',
+              'border-transparent',
+              'shadow-none',
+            )}
+            classNameButtonOpen="bg-black/60!"
+            alignOffset={-4}
+          />
+        </div>}
       {isSelectingPhotos &&
         <SelectTileOverlay
           isSelected={isSelected}

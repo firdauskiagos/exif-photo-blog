@@ -1,7 +1,7 @@
 import { getPhotosCached } from '@/photo/cache';
 import {
   IMAGE_OG_DIMENSION_SMALL,
-  MAX_PHOTOS_TO_SHOW_PER_CATEGORY,
+  PHOTO_PREVIEW_QUERY_OPTIONS,
 } from '@/image-response';
 import RecentsImageResponse from
   '@/recents/RecentsImageResponse';
@@ -21,7 +21,7 @@ export async function GET() {
   ] = await Promise.all([
     SHOW_RECENTS
       ? getPhotosCached({
-        limit: MAX_PHOTOS_TO_SHOW_PER_CATEGORY,
+        ...PHOTO_PREVIEW_QUERY_OPTIONS,
         recent: true,
       }).catch(() => [])
       : [],

@@ -50,7 +50,7 @@ export const TEXT: I18N = {
     full: 'Completo',
     grid: 'Grade',
     viewOptions: 'Opções de visualização',
-    about: 'Sobre',
+    library: 'Biblioteca',
     admin: 'Menu de administrador',
     search: 'Pesquisar',
     prev: 'Anterior',
@@ -58,7 +58,7 @@ export const TEXT: I18N = {
     next: 'Próximo',
     nextShort: 'Próx',
   },
-  about: {
+  library: {
     titleDefault: 'Sobre este site',
     updated: 'Atualizado há {{distance}}',
     photoCount: 'Quantidade de fotos',
@@ -70,9 +70,6 @@ export const TEXT: I18N = {
     recentAlbum: 'Álbum recente',
     popularTag: 'Tag popular',
     popularPlace: 'Lugar popular',
-  },
-  footer: {
-    madeWith: 'Feito com',
   },
   sort: {
     sort: 'Ordenar',
@@ -107,6 +104,7 @@ export const TEXT: I18N = {
     recipeCopy: 'Copiar texto da receita',
     download: 'Baixar arquivo original',
     sharePhoto: 'Compartilhar Foto',
+    sharePhotos: 'Compartilhar Fotos',
     shareCopy: 'Copiar Link',
     shareTo: 'Compartilhar ...',
     shareX: 'Compartilhar no X',
@@ -145,8 +143,11 @@ export const TEXT: I18N = {
     selectPhotosExit: 'Parar de Selecionar',
     editTitles: 'Editar Títulos ...',
     editTitlesExit: 'Parar de Editar Títulos',
+    app: 'Configurações do app',
     appInsights: 'Insights do aplicativo',
+    appInsightsShort: 'Insights',
     appConfig: 'Configuração da aplicação',
+    appConfigShort: 'Configuração',
     clearCache: 'Limpar cache',
     clearCacheSuccess: 'O cache do site foi limpo',
     edit: 'Editar',
@@ -157,15 +158,17 @@ export const TEXT: I18N = {
     download: 'Baixar',
     sync: 'Sincronizar',
     syncAutomatic: 'Automático',
+    syncUpdateColor: 'Atualizar cor',
+    syncUpdateColorSuccess: 'Cor atualizada:',
     syncOverwrite: 'Sobrescrever',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     syncOverwriteConfirm: 'Tem certeza de que deseja sobrescrever todos os campos da foto? Dados personalizados podem ser perdidos.',
     reupload: 'Enviar novamente',
     delete: 'Excluir',
     deleteConfirm: 'Tem certeza de que deseja excluir "{{photoTitle}}"?',
     setVisibility: 'Visibilidade',
     setVisibilityPlaceholder: 'Definir visibilidade para {{quantity}} ...',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     setVisibilityConfirm: 'Tem certeza de que deseja definir a visibilidade para "{{visibility}}" para {{quantity}}?',
     setVisibilitySuccess: 'Visibilidade atualizada para {{quantity}}',
     visibilityDefault: 'Padrão',
@@ -182,17 +185,17 @@ export const TEXT: I18N = {
     selectAll: 'Selecionar tudo',
     apply: 'Aplicar',
     tagPlaceholder: 'Marcar {{quantity}} ...',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     tagConfirm: 'Tem certeza de que deseja aplicar tags a {{quantity}}? Esta ação não pode ser desfeita.',
     tagSuccess: '{{quantity}} marcadas com {{tags}}',
     albumPlaceholder: 'Adicionar {{quantity}} a álbuns ...',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     albumConfirm: 'Tem certeza de que deseja adicionar {{quantity}} a estes álbuns? Esta ação não pode ser desfeita.',
     albumSuccess: '{{quantity}} adicionadas a {{albums}}',
     favoriteConfirm: 'Tem certeza de que deseja favoritar {{quantity}}?',
     favoriteSuccess: '{{quantity}} favoritadas',
     batchActionFailure: 'Algo deu errado ao atualizar {{quantity}}',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     deletePhotosConfirm: 'Tem certeza de que deseja excluir {{quantity}}? Esta ação não pode ser desfeita.',
     deletePhotosSuccess: '{{quantity}} excluídas',
     deletePhotosFailure: 'Algo deu errado ao excluir {{quantity}}',
@@ -202,7 +205,7 @@ export const TEXT: I18N = {
     setupIncomplete: 'Finalizar configuração',
     setupSignIn: 'Entre para enviar fotos',
     setupFirstPhoto: 'Adicione sua primeira foto',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     setupConfig: 'Altere o nome do site e outras configurações editando as variáveis de ambiente referenciadas em',
   },
   utility: {
@@ -217,5 +220,6 @@ export const TEXT: I18N = {
     copyPhrase: '{{label}} copiado',
     paginate: '{{index}} de {{count}}',
     paginateAction: '{{action}} {{index}} de {{count}}',
+    madeWith: 'Feito com',
   },
 };

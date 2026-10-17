@@ -7,7 +7,6 @@ import {
 import AdminAppConfiguration from '@/admin/config/AdminAppConfiguration';
 import { clsx } from 'clsx/lite';
 import { HiOutlinePhotograph } from 'react-icons/hi';
-import { revalidatePath } from 'next/cache';
 import SignInOrUploadClient from '@/admin/SignInOrUploadClient';
 import Link from 'next/link';
 import { PATH_ADMIN_CONFIGURATION } from '@/app/path';
@@ -21,7 +20,10 @@ export default async function PhotosEmptyState() {
       contentMain={
         <Container
           key="PhotosEmptyState"
-          className="min-h-[20rem] sm:min-h-[30rem] px-8"
+          className={clsx(
+            'min-h-[20rem] sm:min-h-[30rem] px-8',
+            'mt-px',
+          )}
           padding="loose"
         >
           <HiOutlinePhotograph
@@ -41,11 +43,6 @@ export default async function PhotosEmptyState() {
             : <div className="max-w-md text-center space-y-6">
               <SignInOrUploadClient
                 shouldResize={!PRESERVE_ORIGINAL_UPLOADS}
-                onLastUpload={async () => {
-                  'use server';
-                  // Update upload count in admin nav
-                  revalidatePath('/admin', 'layout');
-                }}
               />
               <div>
                 {appText.onboarding.setupConfig}

@@ -13,16 +13,22 @@ import { SWR_KEYS } from '@/swr';
 export default function PhotosHover({
   hoverKey,
   header,
+  description,
   getPhotos,
   photosCount,
+  maxPhotos,
+  gap,
   children,
   className,
   color,
 }: {
   hoverKey: string
   header: ReactNode
+  description?: string
   getPhotos: () => Promise<Photo[]>
   photosCount: number
+  maxPhotos?: number
+  gap?: boolean
   children: ReactNode
   className?: string
   color?: ComponentProps<typeof SharedHover>['color']
@@ -54,8 +60,11 @@ export default function PhotosHover({
     <EntityHover {...{
       hoverKey,
       header,
+      description,
       photos,
       photosCount,
+      maxPhotos,
+      gap,
       className,
       color,
       caption,

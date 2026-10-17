@@ -40,7 +40,7 @@ export const FEED_META_QUERY_OPTIONS: PhotoQueryOptions = {
 
 export const APP_OG_IMAGE_QUERY_OPTIONS: PhotoQueryOptions = {
   ...FEED_BASE_QUERY_OPTIONS,
-  ...USER_DEFAULT_SORT_OPTIONS,
+  sortBy: 'random',
 };
 
 // PROGRAMMATIC FEED QUERY OPTIONS

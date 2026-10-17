@@ -8,13 +8,17 @@ import { Album } from '.';
 import useCategoryCounts from '@/category/useCategoryCounts';
 import AdminAlbumMenu from './AdminAlbumMenu';
 import { useAppState } from '@/app/AppState';
+import { htmlToPlainText } from '@/utility/html';
+import { ReactNode } from 'react';
 
 export default function PhotoAlbum({
   album,
+  label,
   showAdminMenu,
   ...props
 }: {
   album: Album
+  label?: ReactNode
   showAdminMenu?: boolean
 } & EntityLinkExternalProps) {
   const { getAlbumCount } = useCategoryCounts();
@@ -23,9 +27,12 @@ export default function PhotoAlbum({
   return (
     <EntityLink
       {...props}
-      label={album.title}
+      label={label ?? album.title}
       path={pathForAlbum(album)}
       hoverQueryOptions={{ album }}
+      hoverDescription={album.description
+        ? htmlToPlainText(album.description) || undefined
+        : undefined}
       icon={<IconAlbum className="translate-y-[-0.5px]" />}
       hoverCount={props.hoverCount ?? getAlbumCount(album)}
       action={showAdminMenu && isUserSignedIn &&

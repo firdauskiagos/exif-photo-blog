@@ -5,7 +5,15 @@ import { BLUR_ENABLED } from '@/app/config';
 import { useAppState } from '@/app/AppState';
 import { clsx}  from 'clsx/lite';
 import Image, { ImageProps } from 'next/image';
-import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  RefObject,
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import useDocumentVisibility from '@/utility/useDocumentVisibility';
 
 export default function ImageWithFallback({
   ref: refProp,
@@ -19,6 +27,7 @@ export default function ImageWithFallback({
   ref?: RefObject<HTMLImageElement | null>
   blurCompatibilityLevel?: 'none' | 'low' | 'high'
   classNameImage?: string
+  priority?: boolean
 }) {
   const ref = useRef<HTMLImageElement>(null);
 
@@ -29,7 +38,26 @@ export default function ImageWithFallback({
   const [fadeFallbackTransition, setFadeFallbackTransition] =
     useState(!hasLoadedWithAnimations);
 
-  const onLoad = useCallback(() => setIsLoading(false), []);
+  const {
+    hasDocumentBeenHidden,
+    whenDocumentVisible,
+  } = useDocumentVisibility(isLoading);
+
+  // Chrome skips/discards decoding in background tabs,
+  // so re-decode once visible before revealing
+  const onLoad = useCallback((event: SyntheticEvent<HTMLImageElement>) => {
+    const image = event.currentTarget;
+    if (!hasDocumentBeenHidden()) {
+      setIsLoading(false);
+    } else {
+      whenDocumentVisible()
+        // Skip decoding images unmounted while the tab was hidden
+        .then(() => image.isConnected ? image.decode() : undefined)
+        .catch(() => {})
+        .finally(() => setIsLoading(false));
+    }
+  }, [hasDocumentBeenHidden, whenDocumentVisible]);
+
   const onError = useCallback(() => setDidError(true), []);
 
   useEffect(() => {
@@ -51,6 +79,11 @@ export default function ImageWithFallback({
     }
   };
 
+  const showFallback = isLoading || didError || shouldDebugImageFallbacks;
+
+  // Fallback sits beneath the image so it remains visible
+  // until the image actually paints, then fades out
+  // (delayed) to clear any edges the image doesn't cover
   return (
     <div
       className={clsx(
@@ -58,13 +91,6 @@ export default function ImageWithFallback({
         className,
       )}
     >
-      <Image ref={refProp ?? ref} {...{
-        ...props,
-        priority,
-        className: classNameImage,
-        onLoad,
-        onError,
-      }} />
       <div
         className={clsx(
           '@container',
@@ -72,10 +98,9 @@ export default function ImageWithFallback({
           'overflow-hidden',
           fadeFallbackTransition &&
             'transition-opacity duration-300 ease-in',
+          fadeFallbackTransition && !showFallback && 'delay-300',
           !(BLUR_ENABLED && blurDataURL) && 'bg-main',
-          (isLoading || didError || shouldDebugImageFallbacks)
-            ? 'opacity-100'
-            : 'opacity-0',
+          showFallback ? 'opacity-100' : 'opacity-0',
         )}
       >
         {(BLUR_ENABLED && blurDataURL)
@@ -92,6 +117,19 @@ export default function ImageWithFallback({
             'bg-gray-100/50 dark:bg-gray-900/50',
           )} />}
       </div>
+      <Image ref={refProp ?? ref} {...{
+        ...props,
+        priority,
+        className: clsx(
+          classNameImage,
+          'relative',
+          fadeFallbackTransition &&
+            'transition-opacity duration-300 ease-in',
+          showFallback && 'opacity-0',
+        ),
+        onLoad,
+        onError,
+      }} />
     </div>
   );
 }

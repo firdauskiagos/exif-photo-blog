@@ -3,7 +3,7 @@
 import { Photo } from '@/photo';
 import AdminPhotosTable from '@/admin/AdminPhotosTable';
 import Note from '@/components/Note';
-import AdminChildPage from '@/components/AdminChildPage';
+import AdminPage from '@/admin/AdminPage';
 import { PATH_ADMIN_PHOTOS } from '@/app/path';
 import { useEffect, useRef, useState } from 'react';
 import { syncPhotosAction } from '@/photo/actions';
@@ -22,10 +22,10 @@ const SYNC_BATCH_SIZE_MAX = 3;
 
 export default function AdminPhotosUpdateClient({
   photos,
-  hasAiTextGeneration,
+  hasAiContentGeneration,
 }: {
   photos: Photo[]
-  hasAiTextGeneration: boolean
+  hasAiContentGeneration: boolean
 }) {
   // Use refs for non-reactive while loop state
   const photoIdsToSync = useRef(photos.map(photo => photo.id));
@@ -50,7 +50,7 @@ export default function AdminPhotosUpdateClient({
   }, [photos.length, router, error]);
 
   return (
-    <AdminChildPage
+    <AdminPage
       backLabel="Photos"
       backPath={PATH_ADMIN_PHOTOS}
       breadcrumb={<ResponsiveText shortText="Updates">
@@ -149,7 +149,7 @@ export default function AdminPhotosUpdateClient({
           <AdminPhotosTable
             photos={photos}
             photoIdsSyncing={photoIdsSyncing}
-            hasAiTextGeneration={hasAiTextGeneration}
+            hasAiContentGeneration={hasAiContentGeneration}
             canEdit={false}
             canSync={true}
             canDelete={false}
@@ -159,6 +159,6 @@ export default function AdminPhotosUpdateClient({
           />
         </div>
       </div>
-    </AdminChildPage>
+    </AdminPage>
   );
 }

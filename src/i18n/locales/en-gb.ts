@@ -50,7 +50,7 @@ export const TEXT: I18N = {
     full: 'Full',
     grid: 'Grid',
     viewOptions: 'View Options',
-    about: 'About',
+    library: 'Library',
     admin: 'Admin',
     search: 'Search',
     prev: 'Previous',
@@ -58,7 +58,7 @@ export const TEXT: I18N = {
     next: 'Next',
     nextShort: 'Next',
   },
-  about: {
+  library: {
     titleDefault: 'About this site',
     updated: 'Updated {{distance}} ago',
     photoCount: 'Photo Count',
@@ -70,9 +70,6 @@ export const TEXT: I18N = {
     recentAlbum: 'Recent Album',
     popularTag: 'Popular Tag',
     popularPlace: 'Popular Place',
-  },
-  footer: {
-    madeWith: 'Made with',
   },
   sort: {
     sort: 'Sort',
@@ -107,6 +104,7 @@ export const TEXT: I18N = {
     recipeCopy: 'Copy Recipe Text',
     download: 'Download Original File',
     sharePhoto: 'Share Photo',
+    sharePhotos: 'Share Photos',
     shareCopy: 'Copy Link',
     shareTo: 'Share ...',
     shareX: 'Share on X',
@@ -145,8 +143,11 @@ export const TEXT: I18N = {
     selectPhotosExit: 'Stop Selecting',
     editTitles: 'Edit Titles ...',
     editTitlesExit: 'Stop Editing Titles',
+    app: 'App Settings',
     appInsights: 'App Insights',
+    appInsightsShort: 'Insights',
     appConfig: 'App Configuration',
+    appConfigShort: 'Configuration',
     clearCache: 'Clear Cache',
     clearCacheSuccess: 'Site cache has been cleared',
     edit: 'Edit',
@@ -157,15 +158,17 @@ export const TEXT: I18N = {
     download: 'Download',
     sync: 'Sync',
     syncAutomatic: 'Automatic',
+    syncUpdateColor: 'Update color',
+    syncUpdateColorSuccess: 'Color updated:',
     syncOverwrite: 'Overwrite',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     syncOverwriteConfirm: 'Are you sure you want to overwrite all photo fields? Customised data may be lost.',
     reupload: 'Reupload',
     delete: 'Delete',
     deleteConfirm: 'Are you sure you want to delete "{{photoTitle}}?"',
     setVisibility: 'Visibility',
     setVisibilityPlaceholder: 'Set visibility for {{quantity}} ...',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     setVisibilityConfirm: 'Are you sure you want to set visibility to "{{visibility}}" for {{quantity}}?',
     setVisibilitySuccess: 'Visibility updated for {{quantity}}',
     visibilityDefault: 'Default',
@@ -182,17 +185,17 @@ export const TEXT: I18N = {
     selectAll: 'Select All',
     apply: 'Apply',
     tagPlaceholder: 'Tag {{quantity}} ...',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     tagConfirm: 'Are you sure you want to apply tags to {{quantity}}? This action cannot be undone.',
     tagSuccess: '{{quantity}} tagged {{tags}}',
     albumPlaceholder: 'Add {{quantity}} to albums ...',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     albumConfirm: 'Are you sure you want to add {{quantity}} to these albums? This action cannot be undone.',
     albumSuccess: '{{quantity}} added to {{albums}}',
     favoriteConfirm: 'Are you sure you want to favourite {{quantity}}?',
     favoriteSuccess: '{{quantity}} favourited',
     batchActionFailure: 'Something went wrong updating {{quantity}}',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     deletePhotosConfirm: 'Are you sure you want to delete {{quantity}}? This action cannot be undone.',
     deletePhotosSuccess: '{{quantity}} deleted',
     deletePhotosFailure: 'Something went wrong deleting {{quantity}}',
@@ -202,7 +205,7 @@ export const TEXT: I18N = {
     setupIncomplete: 'Finish Setup',
     setupSignIn: 'Sign in to upload photos',
     setupFirstPhoto: 'Add your first photo',
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     setupConfig: 'Change the site name and other configuration by editing environment variables referenced in',
   },
   utility: {
@@ -217,5 +220,6 @@ export const TEXT: I18N = {
     copyPhrase: '{{label}} copied',
     paginate: '{{index}} of {{count}}',
     paginateAction: '{{action}} {{index}} of {{count}}',
+    madeWith: 'Made with',
   },
 };

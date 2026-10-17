@@ -23,7 +23,7 @@ import { BiChevronRight } from 'react-icons/bi';
 import SegmentMenu from '@/components/SegmentMenu';
 import IconFavs from '@/components/icons/IconFavs';
 import InfinitePhotoScroll from '../InfinitePhotoScroll';
-import AdminEmptyState from '@/admin/AdminEmptyState';
+import EmptyState from '@/components/EmptyState';
 import { TbPhotoSearch } from 'react-icons/tb';
 import { MdOutlineNoPhotography } from 'react-icons/md';
 
@@ -38,6 +38,8 @@ const renderPhoto = (photo: Photo) =>
     aspectRatio={photo.aspectRatio}
     blurDataURL={photo.blurData}
     blurCompatibilityMode={doesPhotoNeedBlurCompatibility(photo)}
+    className="object-cover w-full h-full"
+    classNameImage="object-cover w-full h-full"
   />;
 
 export default function FieldsetPhotoChooser({
@@ -88,7 +90,7 @@ export default function FieldsetPhotoChooser({
       key={photo.id}
       aria-label={altTextForPhoto(photo)}
       className={clsx(
-        'flex w-full aspect-square object-cover',
+        'flex w-full aspect-square items-stretch',
         'overflow-hidden select-none active:opacity-75',
         'cursor-pointer',
         'border-none shadow-none p-0 rounded-none bg-transparent',
@@ -241,21 +243,21 @@ export default function FieldsetPhotoChooser({
                 </div>
               </div>
               {showQuery && resultsNotFound &&
-                <AdminEmptyState
+                <EmptyState
                   icon={<IoSearch className="text-dim" />}
                   className="translate-y-8"
                   includeContainer={false}
                 >
                   No photos found
-                </AdminEmptyState>}
+                </EmptyState>}
               {!showQuery && photosToShow.length === 0 &&
-                <AdminEmptyState
+                <EmptyState
                   icon={<TbPhotoSearch className="text-dim" />}
                   className="translate-y-16"
                   includeContainer={false}
                 >
                   No photos
-                </AdminEmptyState>}
+                </EmptyState>}
               <div className={CLASSNAME_GRID}>
                 {photosToShow.map(photo => renderPhotoButton(photo))}
               </div>
